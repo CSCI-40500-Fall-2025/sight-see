@@ -9,10 +9,14 @@ For New Yorkers who want to share their experiences of the city, SightSee is a m
 
 ## Use the Prototype
 
-Install the prototype APK on Android phone. Launch the app.
+Install the prototype APK on a Android phone. Make sure setting to Install Unknown Apps is turned on. Launch the app.
 
-Features:
+## Features
+
 Start Page: Click "New User" button
+
 Login Page: Input any text in both fields, then click login
+
 Map Screen: Click on map image, or click on menu Icon
+
 Post View: View sample Post and Comments
