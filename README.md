@@ -20,3 +20,34 @@ Login Page: Input any text in both fields, then click login
 Map Screen: Click on map image, or click on menu Icon
 
 Post View: View sample Post and Comments
+
+## Running the Frontend
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (version 20.17.0 or newer recommended)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+
+### Setup Instructions
+
+1. Open a terminal and navigate to the `frontend` folder:
+    ```
+    cd frontend
+    ```
+
+2. Install dependencies:
+    ```
+    npm install
+    ```
+
+3. Start the development server:
+    ```
+    npm run dev
+    ```
+
+4. Open the local URL shown in the terminal (usually [http://localhost:5173](http://localhost:5173)) in your browser.
+
+---
+
+**Note:**  
+If you encounter issues, make sure your Node.js and npm versions meet the prerequisites above.
