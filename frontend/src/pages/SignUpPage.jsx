@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function LoginTextInput(props) {
+function SignUpTextInput(props) {
    return (
       <div>
          <label id={props.id}>
@@ -12,7 +12,7 @@ function LoginTextInput(props) {
    );
 }
 
-function LoginPageButton(props) {
+function SignUpPageButton(props) {
    return (
       <div>
          <button onClick={props.func}>{props.title}</button>
@@ -20,13 +20,13 @@ function LoginPageButton(props) {
    );
 }
 
-export default function LoginPage() {
+export default function SignUpPage() {
    let navigate = useNavigate();
 
    {
       /* Logic for when authentication is good. Empty for now */
    }
-   const onSuccessfulLogin = () => {
+   const onSuccessfulSignUp = () => {
       {
          /** Store credentials here */
       }
@@ -35,39 +35,42 @@ export default function LoginPage() {
    };
 
    {
-      /* Login button click logic. Empty for now */
+      /* Sign up button click logic. Empty for now */
    }
-   const loginButtonClicked = () => {
+   const signUpButtonClicked = () => {
       {
          /** Send info to server here */
       }
 
       if (true) {
-         onSuccessfulLogin();
+         onSuccessfulSignUp();
       }
    };
 
    return (
       <div>
-         <div>
-            <h1>Login</h1>
+         <div className="logo">
+            <h1>Sign Up</h1>
          </div>
 
-         <LoginTextInput
+         <SignUpTextInput
+            title="Email"
+            id="SignUpPageEmailField"
+         ></SignUpTextInput>
+         <SignUpTextInput
             title="Username"
-            id="LoginPageUsernameField"
-         ></LoginTextInput>
+            id="SignUpPageUsernameField"
+         ></SignUpTextInput>
          {/* TODO: Make text for password input hidden somehow */}
-         <LoginTextInput
+         <SignUpTextInput
             title="Password"
-            id="LoginPagePasswordField"
-         ></LoginTextInput>
+            id="SignUpPagePasswordField"
+         ></SignUpTextInput>
 
-         <LoginPageButton
-            title="Login!"
-            func={loginButtonClicked}
-         ></LoginPageButton>
-         {/* TODO: Add way to reset password*/}
+         <SignUpPageButton
+            title="Sign Up!"
+            func={signUpButtonClicked}
+         ></SignUpPageButton>
       </div>
    );
 }
