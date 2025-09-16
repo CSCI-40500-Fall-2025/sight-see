@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function LoginTextInput(props) {
    return (
@@ -6,7 +7,11 @@ function LoginTextInput(props) {
          <label id={props.id}>
             {props.title}:
             <br />
-            <input type="text" />
+            <input
+               type={props.type}
+               value={props.value}
+               onChange={(e) => props.func(e.target.value)}
+            />
          </label>
       </div>
    );
@@ -21,7 +26,17 @@ function LoginPageButton(props) {
 }
 
 export default function LoginPage() {
-   let navigate = useNavigate();
+   const navigate = useNavigate();
+   const [usernameInput, setUsernameInput] = useState("");
+   const [passwordInput, setPasswordInput] = useState("");
+
+   {
+      /** TESSTING*/
+   }
+   useEffect(() => {
+      console.log(`Current Username: ${usernameInput}`);
+      console.log(`Current Password: ${passwordInput}`);
+   }, [usernameInput, passwordInput]);
 
    {
       /* Logic for when authentication is good. Empty for now */
@@ -39,6 +54,16 @@ export default function LoginPage() {
    }
    const loginButtonClicked = () => {
       {
+         /* Pre check here */
+      }
+      if (usernameInput.trim() === "" || passwordInput.trim() === "") {
+         {
+            /** Error message here, telling user to input something into the fields */
+         }
+         return;
+      }
+
+      {
          /** Send info to server here */
       }
 
@@ -55,12 +80,19 @@ export default function LoginPage() {
 
          <LoginTextInput
             title="Username"
+            type="text"
             id="LoginPageUsernameField"
+            value={usernameInput}
+            func={setUsernameInput}
          ></LoginTextInput>
+
          {/* TODO: Make text for password input hidden somehow */}
          <LoginTextInput
             title="Password"
+            type="password"
             id="LoginPagePasswordField"
+            value={passwordInput}
+            func={setPasswordInput}
          ></LoginTextInput>
 
          <LoginPageButton
