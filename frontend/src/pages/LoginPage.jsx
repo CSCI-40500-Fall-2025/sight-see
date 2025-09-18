@@ -57,10 +57,11 @@ export default function LoginPage() {
             title="Username"
             id="LoginPageUsernameField"
          ></LoginTextInput>
-         {/* TODO: Make text for password input hidden somehow */}
+         
          <LoginTextInput
             title="Password"
             id="LoginPagePasswordField"
+            type="password"
          ></LoginTextInput>
 
          <LoginPageButton
