@@ -1,6 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+{
+   /** Login Text Input component
+    * Props:
+    *    id:         which of (username, password) input is
+    *    title:      The label for the text input
+    *    type:       type for input tag (mainly for password input box, to hid characters)
+    *    value:      which state variable the input box is binded to
+    *    func:       function to update respective state variable on change
+    */
+}
 function LoginTextInput(props) {
    return (
       <div>
@@ -17,6 +27,13 @@ function LoginTextInput(props) {
    );
 }
 
+{
+   /** Login Button Component
+    * Props:
+    *    title:      text on button
+    *    func:       function that occurs on button click
+    */
+}
 function LoginPageButton(props) {
    return (
       <div>
@@ -29,14 +46,6 @@ export default function LoginPage() {
    const navigate = useNavigate();
    const [usernameInput, setUsernameInput] = useState("");
    const [passwordInput, setPasswordInput] = useState("");
-
-   {
-      /** TESSTING*/
-   }
-   useEffect(() => {
-      console.log(`Current Username: ${usernameInput}`);
-      console.log(`Current Password: ${passwordInput}`);
-   }, [usernameInput, passwordInput]);
 
    {
       /* Logic for when authentication is good. Empty for now */
@@ -86,7 +95,6 @@ export default function LoginPage() {
             func={setUsernameInput}
          ></LoginTextInput>
 
-         {/* TODO: Make text for password input hidden somehow */}
          <LoginTextInput
             title="Password"
             type="password"

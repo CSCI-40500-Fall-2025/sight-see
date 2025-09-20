@@ -1,5 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
+{
+   /** Button to choose user type
+    * Props:
+    *    text:    Text shown on button
+    *    func:    Which function to call when button is pressed
+    */
+}
 function ChooseUserTypeButton(props) {
    return (
       <div>

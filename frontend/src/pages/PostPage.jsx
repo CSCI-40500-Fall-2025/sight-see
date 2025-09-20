@@ -13,13 +13,16 @@ import profilePic from "../assets/profile_icon.png";
 import treePic from "../assets/post_tree.png";
 
 {
-   /** Component for Post Heading
-    *    The little bar above the picture
-    * Contains: profile pic, username of post's creator
-    * Concerns: Storing and retrieving profile pics
-    *    Falls under storing images
-    *    How to display the returned image?
-    * In this basic ui, use dummy profile image in asset folder
+   /** Post Heading Component
+    * Props:
+    *    username:      the person who created the post
+    *
+    * Future Props:
+    *    profilePic:    the profile picture of the person who made the post
+    *       Right now, use dummy picture
+    *
+    * Concerns:
+    *    Storing and retrieving profile pics
     */
 }
 function PostHeading(props) {
@@ -38,6 +41,14 @@ function PostHeading(props) {
     *    In this basic ui, use dummy tree image in asset folder
     */
 }
+{
+   /** Post Image component
+    * Future Props:
+    *    img:        The img to be displayed
+    * Concerns: Storing and retrieving image pics
+    *    In this basic ui, use dummy tree image in asset folder
+    */
+}
 function PostImage(props) {
    return <img src={treePic}></img>;
 }
@@ -47,6 +58,16 @@ function PostImage(props) {
     * Contains: Time post was created, time posted ago?, Like button
     * Potential feature: number of likes displayed
     *
+    */
+}
+{
+   /** Post Information Component
+    * Props:
+    *    date:                The date the post was created
+    *    time:                How long ago the post was created
+    *    likeCount:           The like count of the post
+    *    likeButtonFunc:      The function that updates like count when like button is pressed
+    *    likeButtonText:      To show "Like"/"Dislike" on appropriate like state
     */
 }
 function PostInformation(props) {
@@ -65,14 +86,17 @@ function PostInformation(props) {
 }
 
 {
-   /** Component for Post Caption */
+   /** Post Caption Component
+    * Props:
+    *    caption:       the caption for the post
+    */
 }
 function PostCaption(props) {
    return <div>{props.caption}</div>;
 }
 
 {
-   /** Component for Comment Section Header */
+   /** Comment Section Header Component */
 }
 function CommentSectionHeader(props) {
    return <h1>Comment Section: </h1>;
@@ -92,7 +116,7 @@ class Comment {
 }
 
 {
-   /** Component to Hold a Single Comment
+   /** Component to Display a Single Comment
     * Props:
     *    username:  Username of commentor
     *    text:      Content of comment
