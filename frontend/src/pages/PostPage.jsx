@@ -127,25 +127,59 @@ function CommentSectionHeader(props) {
    /** Class to organize a Comment's information */
 }
 class Comment {
-   constructor(id, text, username, date, likeCount) {
+   constructor(id, text, username, date, likeCount, userLiked) {
       this.id = id;
       this.text = text;
       this.username = username;
       this.date = date;
       this.likeCount = likeCount;
+      this.userLiked = userLiked;
    }
 }
 
 {
    /** Component to Display a Single Comment
     * Props:
-    *    username:  Username of commentor
-    *    text:      Content of comment
-    *    date:      Date comment created
-    *    likeCount: Like Count of Comment
+    *    username:            Username of commentor
+    *    text:                Content of comment
+    *    date:                Date comment created
+    *    likeCount:           Like Count of Comment
+    *    userLikedComment:    If current user has Liked this specific comment
     */
 }
 function CommentBlock(props) {
+   const [commentLikeCount, changeCommentLikeCountState] = useState(
+      props.likeCount
+   );
+
+   const [userLikedComment, changeUserLikedCommentState] = useState(
+      props.userLiked
+   );
+
+   const likeButtonClicked = () => {
+      // If comment already liked, dislike
+      if (userLikedComment) {
+         // update server
+         let success = true;
+
+         // change locally
+         if (success) {
+            changeUserLikedCommentState(false);
+            changeCommentLikeCountState(commentLikeCount - 1);
+         }
+      } else {
+         // Like the comment
+
+         // update server
+         let success = true;
+
+         if (success) {
+            changeUserLikedCommentState(true);
+            changeCommentLikeCountState(commentLikeCount + 1);
+         }
+      }
+   };
+
    return (
       <div>
          <span>
@@ -155,7 +189,10 @@ function CommentBlock(props) {
          <span>{props.text}</span>
          <br />
          <span>
-            Likes: {props.likeCount} <button>Like</button>
+            Likes: {commentLikeCount}{" "}
+            <button onClick={likeButtonClicked}>
+               {userLikedComment ? "Liked!" : "Like"}
+            </button>
          </span>
       </div>
    );
@@ -178,76 +215,87 @@ export default function PostPage() {
          "This tree is so beautiful, I love its vibrant green leaves!",
          "treeLover123",
          "01/09/2025",
-         14
+         14,
+         true
       ),
       new Comment(
          "2",
          "I love how the oak tree's branches stretch out. It's majestic!",
          "natureFan",
          "02/09/2025",
-         22
+         22,
+         false
       ),
       new Comment(
          "3",
          "It's amazing how trees provide oxygen and shade. They are life!",
          "ecoWarrior",
          "03/09/2025",
-         30
+         30,
+         true
       ),
       new Comment(
          "4",
          "Have you ever seen a giant sequoia? It's mind-blowing how tall they grow!",
          "treeHugger55",
          "04/09/2025",
-         18
+         18,
+         false
       ),
       new Comment(
          "5",
          "Planting trees is such a simple way to help the environment.",
          "greenThumb",
          "05/09/2025",
-         12
+         12,
+         true
       ),
       new Comment(
          "6",
          "The way trees change color in the fall is always so magical.",
          "autumnLover",
          "06/09/2025",
-         27
+         27,
+         false
       ),
       new Comment(
          "7",
          "I think I read that some trees can live for over a thousand years. Incredible!",
          "forestExplorer",
          "07/09/2025",
-         9
+         9,
+         true
       ),
       new Comment(
          "8",
          "I planted a sapling in my backyard today. Can’t wait to see it grow into a mighty oak!",
          "futureForest",
          "08/09/2025",
-         35
+         35,
+         false
       ),
       new Comment(
          "9",
          "The roots of trees are so important for preventing soil erosion. They protect the earth!",
          "earthDefender",
          "09/09/2025",
-         21
+         21,
+         true
       ),
       new Comment(
          "10",
          "I once visited the Amazon rainforest. The trees there are like nothing else on earth.",
          "wildLifeAdventurer",
          "10/09/2025",
-         45
+         45,
+         false
       ),
    ]);
+
    // TEMPORARY
    const [commentsListIndex, changeCommentsListIndexState] = useState(11);
 
-   const updateLikeCount = () => {
+   const updatePostLikeCount = () => {
       if (likedPostState) {
          /** User unlikes the post */
          /** Backend server update here */
@@ -273,7 +321,8 @@ export default function PostPage() {
          text,
          username,
          "8/20/2025",
-         0
+         0,
+         false
       );
 
       changeCommentsListIndexState(commentsListIndex + 1);
@@ -290,7 +339,7 @@ export default function PostPage() {
             time={timePostCreated}
             likeCount={likeCount}
             likeButtonText={likedPostState ? "Dislike" : "Like"}
-            likeButtonFunc={updateLikeCount}
+            likeButtonFunc={updatePostLikeCount}
          ></PostInformation>
          <PostCaption caption={caption}></PostCaption>
          <CommentSectionHeader func={addCommentToList}></CommentSectionHeader>
@@ -307,6 +356,7 @@ export default function PostPage() {
                      text={comment.text}
                      date={comment.date}
                      likeCount={comment.likeCount}
+                     userLiked={comment.userLiked}
                   />
                );
             })}
