@@ -1,14 +1,4 @@
-{
-   /** TO DO:
-    * 1. Make heading for post
-    * 2. add heading for profile pic and username of poster
-    * 3. image
-    * 4. heading for time and date + lke button
-    * 5. comments
-    */
-}
-
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import profilePic from "../assets/profile_icon.png";
 import treePic from "../assets/post_tree.png";
 
@@ -35,13 +25,6 @@ function PostHeading(props) {
 }
 
 {
-   /** Component for Post Heading
-    * Contains: Post image
-    * Concerns: Storing and retrieving image pics
-    *    In this basic ui, use dummy tree image in asset folder
-    */
-}
-{
    /** Post Image component
     * Future Props:
     *    img:        The img to be displayed
@@ -53,13 +36,6 @@ function PostImage(props) {
    return <img src={treePic}></img>;
 }
 
-{
-   /** Component for Post Information
-    * Contains: Time post was created, time posted ago?, Like button
-    * Potential feature: number of likes displayed
-    *
-    */
-}
 {
    /** Post Information Component
     * Props:
@@ -96,10 +72,55 @@ function PostCaption(props) {
 }
 
 {
-   /** Comment Section Header Component */
+   /** Comment Section Header Component
+    * Both the heading itself, and a button to add a comment
+    * Props:
+    *    func: Add a comment to the commentsList variable in PostPage component
+    */
 }
 function CommentSectionHeader(props) {
-   return <h1>Comment Section: </h1>;
+   const [showCommentInput, changeCommentInputState] = useState(false);
+   const [commentText, changeTextState] = useState("");
+
+   const toggleCommentInput = () => {
+      changeCommentInputState(!showCommentInput);
+   };
+
+   const addCommentButtonPressed = () => {
+      // Server side check here?
+      let success = true;
+
+      // Hide the comment input
+      if (success) {
+         changeCommentInputState(false);
+      }
+
+      // Add the new comment locally?
+      props.func(commentText);
+
+      // Clear input
+      changeTextState("");
+   };
+
+   return (
+      <div>
+         <span>
+            <h1>Comment Section:</h1>
+            <button onClick={toggleCommentInput}>Add comment</button>
+         </span>
+         <br />
+         {showCommentInput && (
+            <span>
+               <input
+                  className="newCommentInput"
+                  value={commentText}
+                  onChange={(e) => changeTextState(e.target.value)}
+               ></input>
+               <button onClick={addCommentButtonPressed}> Add comment</button>
+            </span>
+         )}
+      </div>
+   );
 }
 
 {
@@ -133,7 +154,9 @@ function CommentBlock(props) {
          <br />
          <span>{props.text}</span>
          <br />
-         <span>Likes: {props.likeCount}</span>
+         <span>
+            Likes: {props.likeCount} <button>Like</button>
+         </span>
       </div>
    );
 }
@@ -221,6 +244,8 @@ export default function PostPage() {
          45
       ),
    ]);
+   // TEMPORARY
+   const [commentsListIndex, changeCommentsListIndexState] = useState(11);
 
    const updateLikeCount = () => {
       if (likedPostState) {
@@ -241,6 +266,21 @@ export default function PostPage() {
          }
       }
    };
+
+   const addCommentToList = (text) => {
+      const current = new Comment(
+         commentsListIndex,
+         text,
+         username,
+         "8/20/2025",
+         0
+      );
+
+      changeCommentsListIndexState(commentsListIndex + 1);
+
+      changeCommentListState([current, ...commentsList]);
+   };
+
    return (
       <div>
          <PostHeading username={username}></PostHeading>
@@ -253,7 +293,7 @@ export default function PostPage() {
             likeButtonFunc={updateLikeCount}
          ></PostInformation>
          <PostCaption caption={caption}></PostCaption>
-         <CommentSectionHeader></CommentSectionHeader>
+         <CommentSectionHeader func={addCommentToList}></CommentSectionHeader>
 
          {/** Comment Section
           * TO DO: Make the comment section itself it's own component?
