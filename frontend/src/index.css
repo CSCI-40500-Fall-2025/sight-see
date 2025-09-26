@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Components */
 button {
-  @apply btn btn-xs sm:btn-sm md:btn-md lg:btn-lg btn-primary;
+  @apply btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl;
+}
+
+/* Headers*/
+h1 {
+  @apply text-4xl font-bold;
+}
+
+h2 {
+  @apply text-3xl font-semibold;
+}
+
+h3 {
+  @apply text-2xl font-semibold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
 }

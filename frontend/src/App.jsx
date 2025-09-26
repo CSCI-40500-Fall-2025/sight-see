@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import NewUserPage from "./pages/SignUpPage";
-import ChooseUserTypePage from "./pages/ChooseUserType";
-import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/UserAuth/SignUpPage";
+import ChooseUserTypePage from "./pages/UserAuth/ChooseUserType";
+import LoginPage from "./pages/UserAuth/LoginPage";
 import MainPage from "./pages/MainPage";
 import PostPage from "./pages/PostPage";
 import UserProfile from "./pages/UserProfile";
 import UserSettings from "./pages/UserSettings";
-import SignUpPage from "./pages/SignUpPage";
 
 function App() {
    return (
