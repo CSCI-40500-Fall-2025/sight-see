@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { EmailInput, UserNameInput, PasswordInput, Button } from "./UserAuthComponents";
+import { EmailInput, UserNameInput, PasswordInput, Button } from "../../components";
 
 const signUpButtonClicked = () => {
    {
@@ -29,6 +29,7 @@ export default function SignUpPage() {
       /* Sign up button click logic. Empty for now */
    }
    
+   // TODO: Passwords should match
    const SignUpFieldset = (props) => {
       return (
          <div className="w-full max-w-md px-4">
@@ -40,12 +41,12 @@ export default function SignUpPage() {
                <PasswordInput placeholder="Confirm Password"/>
                <Button
                   title="Sign Up"
-                  func={signUpButtonClicked}
+                  func={() => navigate("/main")}
                   className="mb-2 w-full btn-neutral"
                ></Button>
                <Button
                   title="Go Back"
-                  func={() => navigate(-1)}
+                  func={() => navigate("/")}
                   className="mb-2 w-full btn-soft"
                ></Button>
             </fieldset>

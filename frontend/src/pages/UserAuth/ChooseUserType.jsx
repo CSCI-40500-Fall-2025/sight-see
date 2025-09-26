@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "./UserAuthComponents";
+import { Button } from "../../components";
 
 export default function ChooseUserTypePage() {
    let navigate = useNavigate();
@@ -8,7 +8,7 @@ export default function ChooseUserTypePage() {
       return (
          <div className="">
             <h1 className="mb-4">Sign up for Sight See</h1>
-            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4">
+            <fieldset className="fieldset p-4">
                <Button 
                   className="mb-2 w-full btn-neutral" 
                   title="Sign Up" 
