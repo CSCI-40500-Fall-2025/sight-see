@@ -7,6 +7,11 @@ import PostPage from "./pages/PostPage";
 import UserProfile from "./pages/UserProfile";
 import UserSettings from "./pages/UserSettings";
 
+import ChangeProfilePicture from "./pages/SettingPages/ChangeProfilePic";
+import ChangePassword from "./pages/SettingPages/ChangePassWord";
+import ChangeUsername from "./pages/SettingPages/ChangeUsername";
+import ChangeEmail from "./pages/SettingPages/ChangeEmail";
+
 function App() {
    return (
       <BrowserRouter>
@@ -18,6 +23,21 @@ function App() {
             <Route path="/post" element={<PostPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<UserSettings />} />
+
+            <Route path="/settings" element={<UserSettings />} />
+            <Route
+               path="/settings/changeProfilePicture"
+               element={<ChangeProfilePicture />}
+            />
+            <Route
+               path="/settings/changePassword"
+               element={<ChangePassword />}
+            />
+            <Route
+               path="/settings/changeUsername"
+               element={<ChangeUsername />}
+            />
+            <Route path="/settings/changeEmail" element={<ChangeEmail />} />
          </Routes>
       </BrowserRouter>
    );
