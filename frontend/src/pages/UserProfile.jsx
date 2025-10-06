@@ -46,7 +46,7 @@ export default function UserProfile() {
                      postID={current.postID}
                      key={current.postID}
                      func={() => {
-                        navigate(`/post/${current.postID}`);
+                        navigate(`/post/tree`);
                      }}
                   ></ImgTile>
                );

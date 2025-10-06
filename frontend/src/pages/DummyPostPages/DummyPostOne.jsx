@@ -6,7 +6,7 @@ import {
    Comment,
    CommentSectionHeader,
    CommentBlock,
-} from "./PostComponents";
+} from "../../components/PostComponents";
 
 import treePic from "../../sampleImages/post_tree.png";
 
