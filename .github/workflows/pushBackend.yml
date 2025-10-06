@@ -14,7 +14,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.PUSH_BACKEND }}
         with:
-          source-files: 'sightsee-backend/'
+          source-files: 'sightsee-backend/.'
           destination-username: 'k-klein90'
           destination-repository: 'SightSee-backend'
           commit-email: 'kalliope.klein90@myhunter.cuny.edu'
