@@ -56,7 +56,7 @@ export default function PostPage() {
       const current = new Comment(
          commentsListIndex,
          text,
-         username,
+         "LeafyExcitement",
          "8/20/2025",
          0,
          false

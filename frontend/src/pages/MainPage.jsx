@@ -44,6 +44,30 @@ export default function MainPage() {
                navigate("/post/6");
             }}
          ></Button>
+         <Button
+            title="Go to post 7"
+            func={() => {
+               navigate("/post/7");
+            }}
+         ></Button>
+         <Button
+            title="Go to post 8"
+            func={() => {
+               navigate("/post/8");
+            }}
+         ></Button>
+         <Button
+            title="Go to post 9"
+            func={() => {
+               navigate("/post/9");
+            }}
+         ></Button>
+         <Button
+            title="Go to post 10"
+            func={() => {
+               navigate("/post/10");
+            }}
+         ></Button>
       </div>
    );
 }
