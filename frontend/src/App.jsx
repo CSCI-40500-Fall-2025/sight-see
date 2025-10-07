@@ -18,6 +18,8 @@ import DummyPostFour from "./pages/DummyPostPages/DummyPostFour";
 import DummyPostFive from "./pages/DummyPostPages/DummyPostFive";
 import DummyPostSix from "./pages/DummyPostPages/DummyPostSix";
 
+import PostPage from "./pages/PostPage";
+
 function App() {
    return (
       <BrowserRouter>
@@ -27,7 +29,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/main" element={<MainPage />} />
             {/**<Route path="/post" element={<PostPage />} /> */}
-            <Route path="/post/tree" element={<DummyPostOne />} />
+            <Route path="/post/tree" element={<PostPage />} />
             <Route path="/post/1" element={<DummyPostOne />} />
             <Route path="/post/2" element={<DummyPostTwo />} />
             <Route path="/post/3" element={<DummyPostThree />} />

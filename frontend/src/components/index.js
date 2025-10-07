@@ -3,3 +3,6 @@ export { default as Navbar } from "./Navbar";
 export { default as EmailInput } from "./EmailInput";
 export { default as UserNameInput } from "./UserNameInput";
 export { default as PasswordInput } from "./PasswordInput";
+export { default as PostContent } from "./PostContent";
+export { default as CommentBlock } from "./CommentBlock";
+export { default as CommentSection } from "./CommentSection";

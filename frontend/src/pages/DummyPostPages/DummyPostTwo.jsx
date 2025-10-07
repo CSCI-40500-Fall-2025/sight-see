@@ -1,16 +1,8 @@
-import {
-   PostHeading,
-   PostCaption,
-   PostImage,
-   PostInformation,
-   Comment,
-   CommentSectionHeader,
-   CommentBlock,
-} from "../../components/PostComponents";
+import { Comment } from "../../components/CommentClass";
+import { Navbar, PostContent, CommentSection } from "../../components";
+import { use, useEffect, useState } from "react";
 
 import picture from "../../sampleImages/hot_dog_cart.png";
-
-import { use, useEffect, useState } from "react";
 
 export default function DummyPostTwo() {
    {
@@ -148,35 +140,21 @@ export default function DummyPostTwo() {
 
    return (
       <div>
-         <PostHeading username={username}></PostHeading>
-         <PostImage img={picture}></PostImage>
-         <PostInformation
+         <Navbar></Navbar>
+         <PostContent
+            img={picture}
+            username={username}
             date={datePostCreated}
             time={timePostCreated}
+            caption={caption}
             likeCount={likeCount}
-            likeButtonText={likedPostState ? "Dislike" : "Like"}
             likeButtonFunc={updatePostLikeCount}
-         ></PostInformation>
-         <PostCaption caption={caption}></PostCaption>
-         <CommentSectionHeader func={addCommentToList}></CommentSectionHeader>
-
-         {/** Comment Section
-          * TO DO: Make the comment section itself it's own component?
-          */}
-         <div>
-            {commentsList.map((comment) => {
-               return (
-                  <CommentBlock
-                     key={comment.id}
-                     username={comment.username}
-                     text={comment.text}
-                     date={comment.date}
-                     likeCount={comment.likeCount}
-                     userLiked={comment.userLiked}
-                  />
-               );
-            })}
-         </div>
+            likeStatus={likedPostState}
+         ></PostContent>
+         <CommentSection
+            addComment={addCommentToList}
+            commentsList={commentsList}
+         ></CommentSection>
       </div>
    );
 }

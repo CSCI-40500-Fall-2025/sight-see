@@ -1,23 +1,15 @@
-import {
-   PostHeading,
-   PostCaption,
-   PostImage,
-   PostInformation,
-   Comment,
-   CommentSectionHeader,
-   CommentBlock,
-} from "../../components/PostComponents";
+import { Comment } from "../../components/CommentClass";
+import { Navbar, PostContent, CommentSection } from "../../components";
+import { use, useEffect, useState } from "react";
 
 import treePic from "../../sampleImages/post_tree.png";
-
-import { use, useEffect, useState } from "react";
 
 export default function DummyPostOne() {
    {
       /** Sample Info */
    }
    let username = "LeafyExcitement";
-   let datePostcreated = "8/20/2025";
+   let datePostCreated = "8/20/2025";
    let timePostCreated = "5 Minutes";
    let caption =
       "A symbol of resilience and growth, this majestic tree stands as a testament to nature’s ability to thrive through time. With roots deep in the earth and branches stretching toward the heavens, it tells a story of patience, endurance, and the quiet beauty of the natural world. Every leaf whispers the secrets of the forest, every twist in the trunk a chapter in a centuries-old tale. 🌳✨";
@@ -146,35 +138,21 @@ export default function DummyPostOne() {
 
    return (
       <div>
-         <PostHeading username={username}></PostHeading>
-         <PostImage img={treePic}></PostImage>
-         <PostInformation
-            date={datePostcreated}
+         <Navbar></Navbar>
+         <PostContent
+            img={treePic}
+            username={username}
+            date={datePostCreated}
             time={timePostCreated}
+            caption={caption}
             likeCount={likeCount}
-            likeButtonText={likedPostState ? "Dislike" : "Like"}
             likeButtonFunc={updatePostLikeCount}
-         ></PostInformation>
-         <PostCaption caption={caption}></PostCaption>
-         <CommentSectionHeader func={addCommentToList}></CommentSectionHeader>
-
-         {/** Comment Section
-          * TO DO: Make the comment section itself it's own component?
-          */}
-         <div>
-            {commentsList.map((comment) => {
-               return (
-                  <CommentBlock
-                     key={comment.id}
-                     username={comment.username}
-                     text={comment.text}
-                     date={comment.date}
-                     likeCount={comment.likeCount}
-                     userLiked={comment.userLiked}
-                  />
-               );
-            })}
-         </div>
+            likeStatus={likedPostState}
+         ></PostContent>
+         <CommentSection
+            addComment={addCommentToList}
+            commentsList={commentsList}
+         ></CommentSection>
       </div>
    );
 }

@@ -31,11 +31,13 @@ export default function UserProfile() {
       { postID: "tree-10", img: treePic },
    ];
 
+   const username = "LeafyExcitement";
+
    return (
       <div>
          <Navbar></Navbar>
 
-         <h3>*Username here*</h3>
+         <h3>{username}</h3>
          <br />
          <br />
          <div className="grid grid-cols-3 grid-rows-3 gap-x-0 gap-y-20">
