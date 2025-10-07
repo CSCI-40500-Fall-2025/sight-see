@@ -9,7 +9,7 @@ export class Comment {
       this.text = text;
       this.username = username;
       this.date = date;
-      this.likeCount = likeCount;
-      this.userLiked = userLiked;
+      this.likes = likeCount;
+      this.likeStatus = userLiked;
    }
 }

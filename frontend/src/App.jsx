@@ -11,13 +11,6 @@ import ChangePassword from "./pages/SettingPages/ChangePassWord";
 import ChangeUsername from "./pages/SettingPages/ChangeUsername";
 import ChangeEmail from "./pages/SettingPages/ChangeEmail";
 
-import DummyPostOne from "./pages/DummyPostPages/DummyPostOne";
-import DummyPostTwo from "./pages/DummyPostPages/DummyPostTwo";
-import DummyPostThree from "./pages/DummyPostPages/DummyPostThree";
-import DummyPostFour from "./pages/DummyPostPages/DummyPostFour";
-import DummyPostFive from "./pages/DummyPostPages/DummyPostFive";
-import DummyPostSix from "./pages/DummyPostPages/DummyPostSix";
-
 import PostPage from "./pages/PostPage";
 
 function App() {
@@ -28,14 +21,7 @@ function App() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/main" element={<MainPage />} />
-            {/**<Route path="/post" element={<PostPage />} /> */}
-            <Route path="/post/tree" element={<PostPage />} />
-            <Route path="/post/1" element={<DummyPostOne />} />
-            <Route path="/post/2" element={<DummyPostTwo />} />
-            <Route path="/post/3" element={<DummyPostThree />} />
-            <Route path="/post/4" element={<DummyPostFour />} />
-            <Route path="/post/5" element={<DummyPostFive />} />
-            <Route path="/post/6" element={<DummyPostSix />} />
+            <Route path="/post/:postID" element={<PostPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<UserSettings />} />
 

@@ -41,8 +41,8 @@ export default function CommentSection(props) {
                   username={comment.username}
                   text={comment.text}
                   date={comment.date}
-                  likeCount={comment.likeCount}
-                  userLiked={comment.userLiked}
+                  likeCount={comment.likes}
+                  userLiked={comment.likeStatus}
                ></CommentBlock>
             );
          })}
