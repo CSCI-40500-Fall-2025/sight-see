@@ -96,10 +96,52 @@ export default function MainPage() {
         
       });
 
+      currentLocationMarker();
       addMarkers();
     }
 
-     // Sample coordinates for demo
+    async function currentLocationMarker() {
+      let userMarker;
+      const { Marker } = await google.maps.importLibrary("marker");
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            console.log("User's current position:", pos);
+
+            // Add a marker for user's current location
+            if (!userMarker) {
+              userMarker = new Marker({
+                map,
+                position: pos,
+                title: "You are here",
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: "#007BFF",
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: "#FFFFFF"
+                }
+              });
+            } else {
+              userMarker.position = pos;
+            }
+            map.setCenter(pos);
+          },
+          () => {
+            console.error("Geolocation permission denied or unavailable");
+          }
+        );
+      } else {
+        console.error("Geolocation not supported by this browser.");
+      }
+    }
+
+    // Sample coordinates for demo
     const coords = [
       { lat: 40.768890, lng: -73.965050 },
       { lat: 40.768530, lng: -73.964950 },
