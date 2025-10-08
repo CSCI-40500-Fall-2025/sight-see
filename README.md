@@ -25,9 +25,9 @@ Post View: View sample Post and Comments
 
 ### Features
 
-#### Pages
+#### Pages and navigation
 - **User Authentication**
-  1. Choose user type  
+  1. Choose user type - click either sign up or login button
   2. Login page — click **Login** to proceed to the Main Page  
   3. Sign Up page — click **Sign Up** to proceed to the Main Page  
 
@@ -36,7 +36,7 @@ Post View: View sample Post and Comments
   - **Note:** Nearby pins are hardcoded around **Hunter College**.  
     If your current location is elsewhere, pan to that area to view nearby pins.  
 
-- **Post Page**
+- **Dummy PostsPost Page** (click on pins from main page to navigate to dummy posts)
 
 - **User Profile** — click the profile picture in the upper-right navigation bar  
 
