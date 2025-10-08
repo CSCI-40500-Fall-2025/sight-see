@@ -42,8 +42,6 @@ Post View: View sample Post and Comments
 
 - **User Settings** — accessible from the same profile dropdown  
 
----
-
 #### Map Features
 - **Interactive map interface** — pan, zoom, and explore nearby locations  
 - **Geolocation** — represented by a blue circle  
