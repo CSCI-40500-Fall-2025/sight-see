@@ -7,7 +7,7 @@
 
 For New Yorkers who want to share their experiences of the city, SightSee is a web application (with mobile-friendly view) that allows users to post and caption geotagged photos, and view posts nearby. Unlike Instagram, which connects users around the world, our product is designed for users to interact with content in their geographic area.
 
-## First Prototype Instructions (version)
+## First Prototype Instructions (v0.0.1)
 
 Install the prototype APK on a Android phone. Make sure setting to Install Unknown Apps is turned on. Launch the app.
 
@@ -21,7 +21,7 @@ Map Screen: Click on map image, or click on menu Icon
 
 Post View: View sample Post and Comments
 
-## Prototype Extension Instructions (version)
+## Prototype Extension Instructions (v0.0.2)
 
 ### Features
 
@@ -34,13 +34,13 @@ Post View: View sample Post and Comments
 - **Main Page** — displays a map with nearby posts  
   - Click **red pins** to view individual post pages  
   - **Note:** Nearby pins are hardcoded around **Hunter College**.  
-    If your current location is elsewhere, pan to that area to view nearby pins.  
+    If your current location is elsewhere, pan to Hunter College area to view nearby pins.  
 
-- **Dummy PostsPost Page** (click on pins from main page to navigate to dummy posts)
+- **Dummy Post Page** - click on pins from main page to navigate to dummy posts
 
 - **User Profile** — click the profile picture in the upper-right navigation bar  
 
-- **User Settings** — accessible from the same profile dropdown  
+- **User Settings** — click the profile picture in the upper-right navigation bar
 
 #### Map Features
 - **Interactive map interface** — pan, zoom, and explore nearby locations  
