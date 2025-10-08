@@ -11,7 +11,7 @@ For New Yorkers who want to share their experiences of the city, SightSee is a w
 
 Install the prototype APK on a Android phone. Make sure setting to Install Unknown Apps is turned on. Launch the app.
 
-## Features
+### Features
 
 Start Page: Click "New User" button
 
@@ -21,11 +21,11 @@ Map Screen: Click on map image, or click on menu Icon
 
 Post View: View sample Post and Comments
 
-# Prototype Extension Instructions (version)
+## Prototype Extension Instructions (version)
 
-## Features
+### Features
 
-### Pages
+#### Pages
 - **User Authentication**
   1. Choose user type  
   2. Login page — click **Login** to proceed to the Main Page  
@@ -44,16 +44,16 @@ Post View: View sample Post and Comments
 
 ---
 
-### Map Features
+#### Map Features
 - **Interactive map interface** — pan, zoom, and explore nearby locations  
 - **Geolocation** — represented by a blue circle  
 - **Pins** — indicate nearby posts (hardcoded for demonstration)  
 
 ---
 
-## Running the Frontend
+### Running the Frontend
 
-### Prerequisites
+#### Prerequisites
 1. [Node.js](https://nodejs.org/) — version **20.17.0** or newer recommended  
 2. [npm](https://www.npmjs.com/) — comes bundled with Node.js  
 3. **Google Maps API**  
@@ -66,7 +66,7 @@ Post View: View sample Post and Comments
 
 ---
 
-### Setup Instructions
+#### Setup Instructions
 
 1. **Open a terminal** and navigate to the `frontend` folder:
    ```bash
