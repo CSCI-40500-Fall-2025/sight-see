@@ -44,7 +44,8 @@ Post View: View sample Post and Comments
 
 #### Map Features
 - **Interactive map interface** — pan, zoom, and explore nearby locations  
-- **Geolocation** — represented by a blue circle  
+- **Current Geolocation** — represented by a blue circle with a white outline
+    - Must enable Geolocation for this feature
 - **Pins** — indicate nearby posts (hardcoded for demonstration)  
 
 ---

@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button, Navbar } from "../components";
 
 export default function MainPage() {
+
+  const navigate = useNavigate();
+
   const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   if (!mapsApiKey) {
     console.error("Google Maps API key is not defined in environment variables.");
@@ -120,7 +123,7 @@ export default function MainPage() {
                 title: "You are here",
                 icon: {
                   path: google.maps.SymbolPath.CIRCLE,
-                  scale: 8,
+                  scale: 12,
                   fillColor: "#007BFF",
                   fillOpacity: 1,
                   strokeWeight: 2,
@@ -142,26 +145,29 @@ export default function MainPage() {
     }
 
     // Sample coordinates for demo
-    const coords = [
-      { lat: 40.768890, lng: -73.965050 },
-      { lat: 40.768530, lng: -73.964950 },
-      { lat: 40.769100, lng: -73.966000 },
-      { lat: 40.767980, lng: -73.964200 },
-      { lat: 40.771000, lng: -73.967000 },
-      { lat: 40.766700, lng: -73.962500 },
-      { lat: 40.764000, lng: -73.968000 },
-      { lat: 40.772500, lng: -73.959500 },
-      { lat: 40.761500, lng: -73.970500 },
-      { lat: 40.757800, lng: -73.971800 },
+    const posts = [
+      { route: "/post/1", lat: 40.768890, lng: -73.965050 },
+      { route: "/post/2", lat: 40.768530, lng: -73.964950 },
+      { route: "/post/3", lat: 40.769100, lng: -73.966000 },
+      { route: "/post/4", lat: 40.767980, lng: -73.964200 },
+      { route: "/post/5", lat: 40.771000, lng: -73.967000 },
+      { route: "/post/6", lat: 40.766700, lng: -73.962500 },
+      { route: "/post/7", lat: 40.764000, lng: -73.968000 },
+      { route: "/post/8", lat: 40.772500, lng: -73.959500 },
+      { route: "/post/9", lat: 40.761500, lng: -73.970500 },
+      { route: "/post/10", lat: 40.757800, lng: -73.971800 },
     ];
     
     async function addMarkers() {
       const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-      for (let i = 0; i < coords.length; i++) {
+      for (let i = 0; i < posts.length; i++) {
         const marker = new AdvancedMarkerElement({
           map: map,
-          position: coords[i],
+          position: posts[i],
           title: `Post ${i + 1}`,
+        });
+        marker.addListener("click", () => {
+          navigate(posts[i].route); 
         });
       }
     }
@@ -169,7 +175,6 @@ export default function MainPage() {
     initMap();
   }, []);
   
-  const navigate = useNavigate();
   return (
     <div>
       <Navbar />
@@ -178,66 +183,6 @@ export default function MainPage() {
         className="w-full h-[800px]"
         region="us"
       ></div>
-      <Button
-        title="Go to post 1"
-        func={() => {
-            navigate("/post/1");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 2"
-        func={() => {
-            navigate("/post/2");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 3"
-        func={() => {
-            navigate("/post/3");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 4"
-        func={() => {
-            navigate("/post/4");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 5"
-        func={() => {
-            navigate("/post/5");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 6"
-        func={() => {
-            navigate("/post/6");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 7"
-        func={() => {
-            navigate("/post/7");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 8"
-        func={() => {
-            navigate("/post/8");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 9"
-        func={() => {
-            navigate("/post/9");
-        }}
-      ></Button>
-      <Button
-        title="Go to post 10"
-        func={() => {
-            navigate("/post/10");
-        }}
-      ></Button>
     </div>
   );
 }
