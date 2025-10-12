@@ -69,7 +69,7 @@ The choice of technologies chosen for our software were influenced by the qualit
 * **Database** - PostgreSQL on AWS RDS
 * **Image storage** - AWS S3
 * **APIs** - Google maps javascript API, Google maps geolocation API
-* **Deployment** - Backend & DB - AWS, Frontend - Vercel
+* **Deployment** - Backend & DB - AWS, Frontend - Verce
 
 ### Architecture Diagram
 <img src="https://github.com/user-attachments/assets/dc012920-9a3b-4c78-8c83-a1f293aa542d" alt="Software architecture diagram" width="450" height="450">
