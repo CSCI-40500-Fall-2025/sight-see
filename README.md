@@ -73,7 +73,7 @@ The choice of technologies chosen for our software were influenced by the qualit
 
 ### Architecture Diagram
 ![Software architecture diagram]
-(/architecture-diagram.jpg)
+(./architecture-diagram.jpg)
 
 ---
 
