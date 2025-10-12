@@ -72,7 +72,7 @@ The choice of technologies chosen for our software were influenced by the qualit
 * **Deployment** - Backend & DB - AWS, Frontend - Vercel
 
 ### Architecture Diagram
-<img src="https://github.com/user-attachments/assets/dc012920-9a3b-4c78-8c83-a1f293aa542d" alt="Software architecture diagram" width="480" height="480">
+<img src="https://github.com/user-attachments/assets/dc012920-9a3b-4c78-8c83-a1f293aa542d" alt="Software architecture diagram" width="450" height="450">
 
 ---
 
