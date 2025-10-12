@@ -48,6 +48,33 @@ Post View: View sample Post and Comments
     - Must enable Geolocation for this feature
 - **Pins** — indicate nearby posts (hardcoded for demonstration)  
 
+## Layered Software Architecture
+
+### Description
+
+The qualities which are most important in influencing our software architecture are as follows:
+* **Number of users** - Our product is a social, consumer software which has the potential of scaling quickly
+* **Software reuse** - Our software involves many components for which credible libraries already exist (i.e. Google Maps API for our map component, Spring Boot for REST capabilities and Authentication, etc.). We can utilize these pre-existing libraries to streamline our software development.
+* **Software compatibility** - Because our product is centered around geo-tagged photos and many other popular software applications support them, we want to ensure compatibility with these other services in the event of future integrations.
+
+Our software comprises a 4 layer architecture:
+* **User Interface** - Web browser, Google Maps UI, Camera/Location permissions
+* **Authentication** - Authentication and Authorization
+* **Basic Services and Application-specific functionality** - User search, Post creation/retrieval, User interaction with posts
+* **Database Management** - Persisting User, Post, and Comment data
+
+The choice of technologies chosen for our software were influenced by the qualities and architecture described above:
+* **Frontend** - React, Tailwind, daisyUI, Vite, Javascript
+* **Backend** - Java, Maven, Spring Boot, BCrypt, Docker containers on AWS ECS
+* **Database** - PostgreSQL on AWS RDS
+* **Image storage** - AWS S3
+* **APIs** - Google maps javascript API, Google maps geolocation API
+* **Deployment** - Backend & DB - AWS, Frontend - Vercel
+
+### Architecture Diagram
+![Software architecture diagram]
+(./architecture-diagram.jpg)
+
 ---
 
 ### Running the Frontend
