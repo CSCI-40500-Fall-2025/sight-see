@@ -1,7 +1,7 @@
 services:
   db:
     container_name: postgres-sightsee
-    image: postgres:latest
+    image: postgres:17
     environment:
       POSTGRES_USER: sightsee
       POSTGRES_PASSWORD: csci40500

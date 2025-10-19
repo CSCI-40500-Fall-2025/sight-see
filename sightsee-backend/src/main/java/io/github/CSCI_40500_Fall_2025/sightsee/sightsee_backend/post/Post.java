@@ -12,8 +12,8 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long postId;
-    private Long userId; // FK
+    private Integer postId;
+    private Integer userId; // FK
     private String imageUrl;
     private String caption;
     private Date timestamp;
@@ -22,7 +22,7 @@ public class Post {
     public Post() {
     }
 
-    public Post(Long postId, Long userId, String imageUrl, String caption, Date timestamp, String locationCoordinates) {
+    public Post(Integer postId, Integer userId, String imageUrl, String caption, Date timestamp, String locationCoordinates) {
         this.postId = postId;
         this.userId = userId;
         this.imageUrl = imageUrl;
@@ -31,19 +31,19 @@ public class Post {
         this.locationCoordinates = locationCoordinates;
     }
 
-    public Long getPostId() {
+    public Integer getPostId() {
         return postId;
     }
 
-    public void setPostId(Long postId) {
+    public void setPostId(Integer postId) {
         this.postId = postId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

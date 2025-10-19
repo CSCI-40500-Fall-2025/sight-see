@@ -13,7 +13,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("users")
+    @GetMapping("/users")
     public List<User> getUsers() {
         return userService.getAllUsers();
     }
