@@ -29,6 +29,16 @@ public class PostController {
         return null;
     }
 
+    @PostMapping("/posts/create")
+    public void createPost(@RequestBody Post newPost) {
+        try {
+            postService.createPost(newPost);
+        }
+        catch (Error e) {
+            System.out.println("Error creating post"); // STUB
+        }
+    }
+
     @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable("id") Integer id) {
         try {
