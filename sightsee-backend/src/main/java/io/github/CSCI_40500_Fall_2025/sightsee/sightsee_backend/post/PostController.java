@@ -1,5 +1,7 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.post;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,20 +16,26 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> allPosts = postService.getAllPosts();
+        if (allPosts != null) {
+            return new ResponseEntity<>(allPosts, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/posts/all-by-user")
-    public List<Post> getAllPostsByUser(@RequestParam(name = "id") Integer userId) {
-        try {
-            return postService.getAllPostsByUser(userId);
+    public ResponseEntity<List<Post>> getAllPostsByUser(@RequestParam(name = "id") Integer userId) {
+        List<Post> allPostsByUser = postService.getAllPostsByUser(userId);
+        if (allPostsByUser != null) {
+            return new ResponseEntity<>(allPostsByUser, HttpStatus.OK);
         }
-        catch(Error e) {
-            System.out.println("Error retrieving user's posts"); // STUB
-        }
-        return null;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // Good to go ^
+    // ///////////////
+    // Work to do v
 
     @PostMapping("/posts/create")
     public void createPost(@RequestBody Post newPost) {

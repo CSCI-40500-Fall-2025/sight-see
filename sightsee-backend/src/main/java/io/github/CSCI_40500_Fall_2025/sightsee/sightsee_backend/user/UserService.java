@@ -13,6 +13,11 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        try {
+            return userRepository.findAll();
+        } catch (Exception e) {
+            System.out.println("Error retrieving all users: " + e.getMessage());
+            return null;
+        }
     }
 }

@@ -14,16 +14,28 @@ public class PostService {
     }
 
     public List<Post> getAllPosts() {
-        return postRepository.findAll();
+        try {
+            return postRepository.findAll();
+        } catch (Exception e) {
+            System.out.println("Error retrieving all posts: " + e.getMessage());
+            return null;
+        }
     }
 
-    public List<Post> getAllPostsByUser(Integer userId) { return postRepository.getAllPostsByUserId(userId); }
-
-    public void deletePost(Integer postId) {
-        postRepository.deleteById(postId);
+    public List<Post> getAllPostsByUser(Integer userId) {
+        try {
+            return postRepository.getAllPostsByUserId(userId);
+        } catch (Exception e) {
+            System.out.println("Error retrieving all posts by user " + userId + ": " + e.getMessage());
+            return null;
+        }
     }
 
     public void createPost(Post post) {
         postRepository.save(post);
+    }
+
+    public void deletePost(Integer postId) {
+        postRepository.deleteById(postId);
     }
 }
