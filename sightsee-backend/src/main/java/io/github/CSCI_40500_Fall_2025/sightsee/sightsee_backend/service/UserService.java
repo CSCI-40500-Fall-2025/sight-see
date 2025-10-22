@@ -1,5 +1,7 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.user;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

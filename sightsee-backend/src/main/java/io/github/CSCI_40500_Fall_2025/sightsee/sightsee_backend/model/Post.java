@@ -1,4 +1,4 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.post;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

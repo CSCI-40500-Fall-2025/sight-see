@@ -1,7 +1,8 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.post;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.PostRepository;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

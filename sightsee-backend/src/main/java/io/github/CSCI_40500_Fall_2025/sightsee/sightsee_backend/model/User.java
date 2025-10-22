@@ -1,4 +1,4 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.user;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
 import jakarta.persistence.*;
 

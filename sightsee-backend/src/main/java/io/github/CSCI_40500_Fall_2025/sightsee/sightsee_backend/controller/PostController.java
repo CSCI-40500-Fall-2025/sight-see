@@ -1,4 +1,7 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.post;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
+
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.PostService;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
