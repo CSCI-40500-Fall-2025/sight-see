@@ -1,5 +1,4 @@
 import { use, useEffect, useState } from "react";
-import treePic from "../sampleImages/post_tree.png";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../components";
 
@@ -18,24 +17,27 @@ function ImgTile(props) {
 export default function UserProfile() {
    const navigate = useNavigate();
    // temp data
+   const tree = "../../sampleImages/post_tree.png";
    const sample = [
-      { postID: "tree-1", img: treePic },
-      { postID: "tree-2", img: treePic },
-      { postID: "tree-3", img: treePic },
-      { postID: "tree-4", img: treePic },
-      { postID: "tree-5", img: treePic },
-      { postID: "tree-6", img: treePic },
-      { postID: "tree-7", img: treePic },
-      { postID: "tree-8", img: treePic },
-      { postID: "tree-9", img: treePic },
-      { postID: "tree-10", img: treePic },
+      { postID: "tree-1", img: tree },
+      { postID: "tree-2", img: tree },
+      { postID: "tree-3", img: tree },
+      { postID: "tree-4", img: tree },
+      { postID: "tree-5", img: tree },
+      { postID: "tree-6", img: tree },
+      { postID: "tree-7", img: tree },
+      { postID: "tree-8", img: tree },
+      { postID: "tree-9", img: tree },
+      { postID: "tree-10", img: tree },
    ];
+
+   const username = "LeafyExcitement";
 
    return (
       <div>
          <Navbar></Navbar>
 
-         <h3>*Username here*</h3>
+         <h3>{username}</h3>
          <br />
          <br />
          <div className="grid grid-cols-3 grid-rows-3 gap-x-0 gap-y-20">
@@ -46,7 +48,7 @@ export default function UserProfile() {
                      postID={current.postID}
                      key={current.postID}
                      func={() => {
-                        navigate(`/post/${current.postID}`);
+                        navigate(`/post/1`);
                      }}
                   ></ImgTile>
                );

@@ -3,7 +3,6 @@ import SignUpPage from "./pages/UserAuth/SignUpPage";
 import ChooseUserTypePage from "./pages/UserAuth/ChooseUserType";
 import LoginPage from "./pages/UserAuth/LoginPage";
 import MainPage from "./pages/MainPage";
-import PostPage from "./pages/PostPage";
 import UserProfile from "./pages/UserProfile";
 import UserSettings from "./pages/UserSettings";
 
@@ -11,6 +10,8 @@ import ChangeProfilePicture from "./pages/SettingPages/ChangeProfilePic";
 import ChangePassword from "./pages/SettingPages/ChangePassWord";
 import ChangeUsername from "./pages/SettingPages/ChangeUsername";
 import ChangeEmail from "./pages/SettingPages/ChangeEmail";
+
+import PostPage from "./pages/PostPage";
 
 function App() {
    return (
@@ -20,7 +21,7 @@ function App() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/main" element={<MainPage />} />
-            <Route path="/post" element={<PostPage />} />
+            <Route path="/post/:postID" element={<PostPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<UserSettings />} />
 
