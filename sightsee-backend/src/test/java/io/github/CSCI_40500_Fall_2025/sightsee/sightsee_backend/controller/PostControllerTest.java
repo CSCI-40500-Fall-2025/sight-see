@@ -52,11 +52,37 @@ public class PostControllerTest {
         // Action
         ResultActions response = mockMvc.perform(get("/posts"));
 
-        // Assert: Correct status
+        // Assert: correct status
         response.andExpect(status().isOk());
         // Assert: number of objects in API response == number of objects received by postService
         String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
         List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
         Assertions.assertEquals(responseContentAsObjectList.size(), postServiceResponse.size());
+    }
+
+    @Test
+    public void postController_getAllPostsByUser_returnsAllPostsByUser() throws Exception {
+        // Setup
+        int userId = 4;
+        List<Post> postServiceResponse = List.of(
+                new Post(3, 4, "https://aws.amazon.com/s3/lanaspost", "lanas post", new Date(), "5345334232,78695875958"),
+                new Post(4, 4, "https://aws.amazon.com/s3/lanassecondpost", "lanas second post", new Date(), "574857498394,79287593984")
+        );
+        Mockito.when(postService.getAllPostsByUser(userId)).thenReturn(postServiceResponse);
+
+        // Action
+        ResultActions response = mockMvc.perform(get("/posts/all-by-user")
+                .queryParam("id", Integer.toString(userId)));
+
+        // Assert: correct status
+        response.andExpect(status().isOk());
+        // Assert: number of objects in API response == number of objects received by postService
+        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+        List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
+        Assertions.assertEquals(postServiceResponse.size(), responseContentAsObjectList.size());
+        // Assert: all returned posts are of the requested userId
+        for (Post post : responseContentAsObjectList) {
+            Assertions.assertEquals(userId, post.getUserId());
+        }
     }
 }
