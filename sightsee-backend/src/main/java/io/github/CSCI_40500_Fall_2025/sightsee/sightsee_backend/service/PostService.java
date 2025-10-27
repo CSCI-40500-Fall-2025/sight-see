@@ -32,8 +32,13 @@ public class PostService {
         }
     }
 
-    public void createPost(Post post) {
-        postRepository.save(post);
+    public Post createPost(Post post) {
+        try {
+            return postRepository.save(post);
+        } catch (Exception e) {
+            System.out.println("Error creating post " + e.getMessage());
+            return null;
+        }
     }
 
     public void deletePost(Integer postId) {

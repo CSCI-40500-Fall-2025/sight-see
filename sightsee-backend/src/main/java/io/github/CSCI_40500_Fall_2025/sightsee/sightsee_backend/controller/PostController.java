@@ -41,13 +41,12 @@ public class PostController {
     // Work to do v
 
     @PostMapping("/posts/create")
-    public void createPost(@RequestBody Post newPost) {
-        try {
-            postService.createPost(newPost);
+    public ResponseEntity<Post> createPost(@RequestBody Post newPost) {
+        Post newlyCreatedPost = postService.createPost(newPost);
+        if (newlyCreatedPost != null) {
+            return new ResponseEntity<>(newlyCreatedPost, HttpStatus.OK);
         }
-        catch (Error e) {
-            System.out.println("Error creating post"); // STUB
-        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @DeleteMapping("/posts/{id}")
