@@ -1,4 +1,5 @@
-export default function UserNameInput(props) {
+export default function UserNameInput({value, onChange, onBlur, error}) {
+    const hint = error || "Must be 3 to 30 characters. Can contain letters, numbers or dash";
     return (
         <div className="mb-2">
             <label className="input validator w-full">
@@ -15,19 +16,21 @@ export default function UserNameInput(props) {
                     </g>
                 </svg>
             <input
-                type="text"
+                type = "text"
                 required
-                placeholder="Username"
-                pattern="[A-Za-z][A-Za-z0-9\-]*"
-                minlength="3"
-                maxlength="30"
-                title="Only letters, numbers or dash"
+                placeholder = "Username"
+                value = {value}
+                onChange = {(e) => onChange?.(e.target.value)}
+                onBlur = {onBlur}
+                pattern ="[A-Za-z][A-Za-z0-9\-]*"
+                minlength = {3}
+                maxlength = {30}
+                title = "Only letters, numbers or dash. Must start with a letter"
+                aria-invalid = {!!error}
+                aria-describedby = "username-hint"
             />
             </label>
-            <p className="validator-hint hidden">
-                Must be 3 to 30 characters
-                <br />containing only letters, numbers or dash
-            </p>
+            <p id = "username-hint" className = {`validator-hint ${error ? "" : "hidden"}`}>{hint}</p>
         </div>
     );
 }

@@ -1,4 +1,5 @@
-export default function EmailInput(props) {
+export default function EmailInput({value, onChange, onBlur, error}) {
+   const hint = error || "Enter a valid email address";
    return (
       <div className="mb-2">
          <label className="input validator w-full">
@@ -14,9 +15,16 @@ export default function EmailInput(props) {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                </g>
             </svg>
-            <input type="email" placeholder="Email address" required />
+            <input type="email" placeholder="Email address" required 
+            value = {value}
+            onChange = {(e) => onChange?.(e.target.value)}
+            onBlur = {onBlur}
+            pattern = "^[^\s@]+@[^\s@]+\.[^\s@]+$"
+            aria-invalid = {!!error}
+            aria-describedby="email-hint"
+            />
          </label>
-         <div className="validator-hint hidden">Enter valid email address</div>
+         <div id = "email-hint" className = {`validator-hint ${error ? "" : "hidden"}`}>{hint}</div>
       </div>
    );
 }

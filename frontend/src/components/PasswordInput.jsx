@@ -1,4 +1,6 @@
-export default function PasswordInput(props) {
+export default function PasswordInput({value, onChange, onBlur, error, placeholder}) {
+    const hint = error || "Password must be at least 8 characters long including at least one number, one uppercase letter, and one special character";
+    
     return (
         <div className="mb-2">
             <label className="input validator w-full">
@@ -19,16 +21,18 @@ export default function PasswordInput(props) {
                 <input
                     type="password"
                     required
-                    placeholder={props.placeholder || "Password"}
-                    minlength="8"
+                    placeholder={placeholder || "Password"}
+                    value = {value}
+                    onChange = {(e) => onChange?.(e.target.value)}
+                    onBlur = {onBlur}
+                    minlength = {8}
                     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                     title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                    aria-invalid = {!!error}
+                    aria-describedby = "password-hint"
                 />
             </label>
-            <p className="validator-hint hidden">
-                Must be more than 8 characters, including
-                <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter
-            </p>
+            <p id = "password-hint" className = {`validator-hint ${error ? "" : "hidden"}`}>{hint}</p>                
         </div>
     );
 }
