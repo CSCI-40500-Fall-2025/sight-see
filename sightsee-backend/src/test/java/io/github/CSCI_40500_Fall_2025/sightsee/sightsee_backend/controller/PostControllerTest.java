@@ -11,11 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.util.Date;
 import java.util.List;
@@ -61,7 +63,7 @@ public class PostControllerTest {
     @Test
     public void postController_getAllPostsByUser_returnsAllPostsByUser() throws Exception {
         // Setup
-        int userId = 4;
+        Integer userId = 4;
         List<Post> postServiceResponse = List.of(
                 new Post(3, 4, "https://aws.amazon.com/s3/lanaspost", "lanas post", new Date(), "5345334232,78695875958"),
                 new Post(4, 4, "https://aws.amazon.com/s3/lanassecondpost", "lanas second post", new Date(), "574857498394,79287593984")
@@ -82,5 +84,22 @@ public class PostControllerTest {
         for (Post post : responseContentAsObjectList) {
             Assertions.assertEquals(userId, post.getUserId());
         }
+    }
+
+    @Test
+    public void postController_createPost_returnsCreatedPost() throws Exception {
+        // Setup
+        Post post = new Post(null, 1, "image.com", "this is a caption", new Date(), "location");
+        String postAsJSON = jsonConverter.convertPostToJSON(post);
+        Post postServiceResponse = new Post(26, 1, "image.com", "this is a caption", new Date(), "location");
+        Mockito.when(postService.createPost(post)).thenReturn(postServiceResponse); // simulate postId being generated
+
+        // Action
+        ResultActions response = mockMvc.perform(post("/posts/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postAsJSON));
+
+//        response.andExpect(status().isCreated());
+
     }
 }

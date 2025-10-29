@@ -36,16 +36,13 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Good to go ^
-    // ///////////////
-    // Work to do v
-
     @PostMapping("/posts/create")
     public ResponseEntity<Post> createPost(@RequestBody Post newPost) {
         Post newlyCreatedPost = postService.createPost(newPost);
         if (newlyCreatedPost != null) {
-            return new ResponseEntity<>(newlyCreatedPost, HttpStatus.OK);
+            return new ResponseEntity<>(newlyCreatedPost, HttpStatus.CREATED);
         }
+        System.out.println("hi");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

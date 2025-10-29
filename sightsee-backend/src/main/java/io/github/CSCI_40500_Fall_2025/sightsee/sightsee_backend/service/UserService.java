@@ -22,4 +22,13 @@ public class UserService {
             return null;
         }
     }
+
+    public User getUserById(Integer userId) {
+        try {
+            return userRepository.getUserById(userId);
+        } catch (Exception e) {
+            System.out.println("Error retrieving user with userId: " + userId + " " + e.getMessage());
+            return null;
+        }
+    }
 }
