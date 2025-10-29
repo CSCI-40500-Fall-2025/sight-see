@@ -35,19 +35,6 @@ The choice of technologies chosen for our software were influenced by the qualit
 
 ---
 
-## First Prototype Instructions (v0.0.1)
-
-Install the prototype APK on a Android phone. Make sure setting to Install Unknown Apps is turned on. Launch the app.
-
-### Features
-
-Start Page: Click "New User" button
-
-Login Page: Input any text in both fields, then click login
-
-Map Screen: Click on map image, or click on menu Icon
-
-Post View: View sample Post and Comments
 
 ## Prototype Extension Instructions (v0.0.2)
 
