@@ -41,7 +41,13 @@ public class PostService {
         }
     }
 
-    public void deletePost(Integer postId) {
-        postRepository.deleteById(postId);
+    public Boolean deletePost(Integer postId) {
+        try {
+            postRepository.deleteById(postId);
+            return !postRepository.existsById(postId);
+        } catch (Exception e) {
+            System.out.println("Error deleting post " + e.getMessage());
+            return false;
+        }
     }
 }

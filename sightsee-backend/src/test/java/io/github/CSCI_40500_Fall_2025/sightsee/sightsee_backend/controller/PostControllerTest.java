@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import java.util.Date;
 import java.util.List;
@@ -101,5 +102,19 @@ public class PostControllerTest {
 
 //        response.andExpect(status().isCreated());
 
+    }
+
+    @Test
+    public void postController_deletePost_returnsStatus204() throws Exception {
+        // Setup
+        Integer postId = 5;
+        Mockito.when(postService.deletePost(postId)).thenReturn(true);
+
+        // Action
+        ResultActions response = mockMvc.perform(delete("/posts")
+                .queryParam("id", Integer.toString(postId)));
+
+        // Assert: successful deletion returns 204 status
+        response.andExpect(status().isNoContent());
     }
 }

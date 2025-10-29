@@ -42,18 +42,15 @@ public class PostController {
         if (newlyCreatedPost != null) {
             return new ResponseEntity<>(newlyCreatedPost, HttpStatus.CREATED);
         }
-        System.out.println("hi");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @DeleteMapping("/posts/{id}")
-    public void deletePost(@PathVariable("id") Integer id) {
-        try {
-            System.out.println("hi");
-            postService.deletePost(id);
+    @DeleteMapping("/posts")
+    public ResponseEntity<String> deletePost(@RequestParam(name = "id") Integer postId) {
+        Boolean isDeleted = postService.deletePost(postId);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        catch (Error e) {
-            System.out.println("Error deleting post"); // STUB
-        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
