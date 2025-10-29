@@ -26,6 +26,11 @@ public class JsonConverter {
         return objectMapper.writeValueAsString(post);
     }
 
+    public Post convertJsonToPost(String jsonString) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(jsonString, new TypeReference<Post>() {});
+    }
+
     public User convertJsonToUserObject(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(jsonString, new TypeReference<User>() {});

@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -93,15 +94,22 @@ public class PostControllerTest {
         Post post = new Post(null, 1, "image.com", "this is a caption", new Date(), "location");
         String postAsJSON = jsonConverter.convertPostToJSON(post);
         Post postServiceResponse = new Post(26, 1, "image.com", "this is a caption", new Date(), "location");
-        Mockito.when(postService.createPost(post)).thenReturn(postServiceResponse); // simulate postId being generated
+        Mockito.when(postService.createPost(any(Post.class))).thenReturn(postServiceResponse); // simulate postId being generated
 
         // Action
         ResultActions response = mockMvc.perform(post("/posts/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(postAsJSON));
 
-//        response.andExpect(status().isCreated());
-
+        // Assert: correct status
+        response.andExpect(status().isCreated());
+        // Assert: returned post matches the post passed into controller
+        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+        Post responseContentAsPostObject = jsonConverter.convertJsonToPost(responseContentAsJSON);
+        Assertions.assertEquals(post.getUserId(), responseContentAsPostObject.getUserId());
+        Assertions.assertEquals(post.getImageUrl(), responseContentAsPostObject.getImageUrl());
+        Assertions.assertEquals(post.getCaption(), responseContentAsPostObject.getCaption());
+        Assertions.assertEquals(post.getLocationCoordinates(), responseContentAsPostObject.getLocationCoordinates());
     }
 
     @Test
