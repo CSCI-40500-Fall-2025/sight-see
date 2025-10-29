@@ -36,7 +36,7 @@ public class UserControllerTest {
     private final JsonConverter jsonConverter = new JsonConverter();
 
     @Test
-    public void userController_getUserById_returnsUser() throws Exception {
+    public void test_userController_getUserById_returnsUser() throws Exception {
         // Setup
         Integer userId = 3;
         User userServiceResponse = new User(userId, "Vessel", "vessel17", "vessel@gmail.com", "takemebacktoeden", "profilephoto.com");
@@ -55,7 +55,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void userController_getUserByEmail_returnsUser() throws Exception {
+    public void test_userController_getUserByEmail_returnsUser() throws Exception {
         // Setup
         String email = "vessel@gmail.com";
         User userServiceResponse = new User(3, "Vessel", email, "vessel@gmail.com", "takemebacktoeden", "profilephoto.com");
@@ -74,7 +74,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void userController_getUserByEmail_returnsStatus404() throws Exception {
+    public void test_userController_getUserByEmail_returnsStatus404() throws Exception {
         // Setup
         String email = "johnfrusciante@gmail.com";
         User userServiceResponse = new User();
@@ -90,7 +90,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void userController_deleteUser_returnsStatus204() throws Exception {
+    public void test_userController_deleteUser_returnsStatus204() throws Exception {
         // Setup
         Integer userId = 5;
         Mockito.when(userService.deleteUser(userId)).thenReturn(true);
@@ -104,7 +104,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void userController_deleteUser_returnsStatus500() throws Exception {
+    public void test_userController_deleteUser_returnsStatus500() throws Exception {
         // Setup
         Integer userId = 6;
         Mockito.when(userService.deleteUser(userId)).thenReturn(false);
