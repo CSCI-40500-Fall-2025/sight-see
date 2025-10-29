@@ -1,4 +1,4 @@
-package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.s3;
+package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
