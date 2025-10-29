@@ -35,34 +35,6 @@ The choice of technologies chosen for our software were influenced by the qualit
 
 ---
 
-
-## Prototype Extension Instructions (v0.0.2)
-
-### Features
-
-#### Pages and navigation
-- **User Authentication**
-  1. Choose user type - click either sign up or login button
-  2. Login page — click **Login** to proceed to the Main Page  
-  3. Sign Up page — click **Sign Up** to proceed to the Main Page  
-
-- **Main Page** — displays a map with nearby posts  
-  - Click **red pins** to view individual post pages  
-  - **Note:** Nearby pins are hardcoded around **Hunter College**.  
-    If your current location is elsewhere, pan to Hunter College area to view nearby pins.  
-
-- **Dummy Post Page** - click on pins from main page to navigate to dummy posts
-
-- **User Profile** — click the profile picture in the upper-right navigation bar  
-
-- **User Settings** — click the profile picture in the upper-right navigation bar
-
-#### Map Features
-- **Interactive map interface** — pan, zoom, and explore nearby locations  
-- **Current Geolocation** — represented by a blue circle with a white outline
-    - Must enable Geolocation for this feature
-- **Pins** — indicate nearby posts (hardcoded for demonstration)  
-
 ### Running the Frontend
 
 #### Prerequisites
@@ -95,8 +67,3 @@ The choice of technologies chosen for our software were influenced by the qualit
     ```
 
 4. Open the local URL shown in the terminal (usually [http://localhost:5173](http://localhost:5173)) in your browser.
-
----
-
-**Note:**  
-If you encounter issues, make sure your Node.js and npm versions meet the prerequisites above.
