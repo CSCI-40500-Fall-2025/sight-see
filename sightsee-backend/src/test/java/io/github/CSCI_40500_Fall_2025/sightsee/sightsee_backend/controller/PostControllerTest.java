@@ -125,4 +125,18 @@ public class PostControllerTest {
         // Assert: successful deletion returns 204 status
         response.andExpect(status().isNoContent());
     }
+
+    @Test
+    public void postController_deletePost_returnsStatus500() throws Exception {
+        // Setup
+         Integer postId = 6;
+         Mockito.when(postService.deletePost(postId)).thenReturn(false);
+
+         // Action
+        ResultActions response = mockMvc.perform(delete("/posts")
+                .queryParam("id", Integer.toString(postId)));
+
+        // Assert: failed deletion returns 500 status
+        response.andExpect(status().isInternalServerError());
+    }
 }
