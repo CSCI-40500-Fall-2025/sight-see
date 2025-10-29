@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
+//TODO: improve exception types and messages
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -35,11 +36,19 @@ public class UserService {
             //throw new ?NotFoundException("User not found");
     }
 
+//    public void checkIfUserExists(Long userId) {
+//        Optional<User> user = userRepository.findById(userId);
+//        if (user.isEmpty()) {
+//            throw new ObjectNotFoundException(userId, "User");
+//        }
+//    }
+
+    //overwrites any preexisting object with matching key
     public void uploadProfilePhoto(Integer userId, MultipartFile file) {
         throwIfUserNotFound(userId);
         try {
             s3Service.putObject(profilePhotosBucket,
-                                userId.toString(),
+                                String.valueOf(userId),
                                 file.getBytes());   //last argument may throw IOException
         } catch (IOException e) {
             throw new RuntimeException(e); //TODO: narrow exception type
@@ -62,5 +71,19 @@ public class UserService {
             return null;
         }
     }
+
+//    public byte[] getProfilePhoto(Long userId) {
+////        User user = userRepository.findById(userId).orElseThrow(
+////            () -> new ObjectNotFoundException(userId, "User"));
+////        checkIfUserExists(userId);
+//
+//        User user = userRepository.findById(userId).get();
+//        if (user.getProfilePhotoUrl().isEmpty()) {
+//            throw new ObjectNotFoundException(userId, "User profile photo");
+//        }
+//        return s3Service.getObject(profilePhotosBucket,
+//                                   String.valueOf(userId));
+//
+//    }
 
 }

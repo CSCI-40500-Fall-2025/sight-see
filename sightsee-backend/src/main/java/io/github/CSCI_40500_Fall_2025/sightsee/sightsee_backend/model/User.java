@@ -19,13 +19,13 @@ public class User {
     public User() {
     }
 
-    public User(Integer userId, String name, String username, String email, String password, String profilePhotoUrl) {
+    public User(Integer userId, String name, String username, String email, String password/*, String profilePhotoUrl*/) {
         this.userId = userId;
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.profilePhotoUrl = profilePhotoUrl;
+//        this.profilePhotoUrl = profilePhotoUrl;   //profile photo is not stored before user is created
     }
 
     public Integer getUserId() {

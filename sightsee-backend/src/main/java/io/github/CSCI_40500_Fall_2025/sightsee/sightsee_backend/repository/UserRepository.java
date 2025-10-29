@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    //@Query(value = "SELECT * FROM users WHERE user_id = :userId", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE user_id = :userId", nativeQuery = true)
     User getUserByUserId(Integer userId);
 
 }

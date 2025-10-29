@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+//TODO: evaluate appropriateness of mappings
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -32,14 +34,14 @@ public class UserController {
 //        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 //    }
 
-    @PostMapping(path = "/users/{userId}/profile-photo",
+    @PostMapping(path = "/{userId}/profile-photo",
                  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadProfilePhoto(@PathVariable("userId") Integer userId,
                                    @RequestParam("file") MultipartFile file) {
         userService.uploadProfilePhoto(userId, file);
     }
 
-    @GetMapping("/users/{userId}/profile-photo")
+    @GetMapping("/{userId}/profile-photo")
     public byte[] getProfilePhoto(@PathVariable("userId") Integer userId) {
         return userService.getProfilePhoto(userId);
 	}
