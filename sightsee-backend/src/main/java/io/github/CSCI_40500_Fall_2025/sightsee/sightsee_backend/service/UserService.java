@@ -5,7 +5,6 @@ import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.UserR
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @Service
@@ -53,6 +52,15 @@ public class UserService {
         User user = userRepository.getUserByUserId(userId);
         return s3Service.getObject(profilePhotosBucket,
                                    userId.toString());
+    }
+
+    public User getUserById(Integer userId) {
+        try {
+            return userRepository.getUserById(userId);
+        } catch (Exception e) {
+            System.out.println("Error retrieving user with userId: " + userId + " " + e.getMessage());
+            return null;
+        }
     }
 
 }

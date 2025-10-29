@@ -3,11 +3,11 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "serial")
     private Integer userId;
     private String name;
     private String username;

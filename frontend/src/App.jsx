@@ -12,6 +12,7 @@ import ChangeUsername from "./pages/SettingPages/ChangeUsername";
 import ChangeEmail from "./pages/SettingPages/ChangeEmail";
 
 import PostPage from "./pages/PostPage";
+import CreatePostPage from "./pages/CreatePostPage";
 
 function App() {
    return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/post/:postID" element={<PostPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<UserSettings />} />
+            <Route path="/createpost" element={<CreatePostPage />} />
 
             <Route path="/settings" element={<UserSettings />} />
             <Route

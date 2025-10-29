@@ -36,28 +36,21 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Good to go ^
-    // ///////////////
-    // Work to do v
-
     @PostMapping("/posts/create")
-    public void createPost(@RequestBody Post newPost) {
-        try {
-            postService.createPost(newPost);
+    public ResponseEntity<Post> createPost(@RequestBody Post newPost) {
+        Post newlyCreatedPost = postService.createPost(newPost);
+        if (newlyCreatedPost != null) {
+            return new ResponseEntity<>(newlyCreatedPost, HttpStatus.CREATED);
         }
-        catch (Error e) {
-            System.out.println("Error creating post"); // STUB
-        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @DeleteMapping("/posts/{id}")
-    public void deletePost(@PathVariable("id") Integer id) {
-        try {
-            System.out.println("hi");
-            postService.deletePost(id);
+    @DeleteMapping("/posts")
+    public ResponseEntity<String> deletePost(@RequestParam(name = "id") Integer postId) {
+        Boolean isDeleted = postService.deletePost(postId);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        catch (Error e) {
-            System.out.println("Error deleting post"); // STUB
-        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

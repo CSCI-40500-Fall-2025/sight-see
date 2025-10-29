@@ -6,3 +6,6 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as PostContent } from "./PostContent";
 export { default as CommentBlock } from "./CommentBlock";
 export { default as CommentSection } from "./CommentSection";
+export { default as TextInput } from "./TextInput";
+export { default as ImageUpload } from "./CreatePost/ImageUpload";
+export { default as ImageDisplay } from "./CreatePost/ImageDisplay";
