@@ -40,7 +40,7 @@ public class PostControllerTest {
     private final JsonConverter jsonConverter = new JsonConverter();
 
     @Test
-    public void postController_getAllPosts_returnsAllPosts() throws Exception {
+    public void test_postController_getAllPosts_returnsAllPosts() throws Exception {
         // Setup
         List<Post> postServiceResponse = List.of(
                 new Post(1, 1, "https://aws.amazon.com/s3/noahpost", "noahs post", new Date(), "394820485485030,384003985830"),
@@ -63,7 +63,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void postController_getAllPostsByUser_returnsAllPostsByUser() throws Exception {
+    public void test_postController_getAllPostsByUser_returnsAllPostsByUser() throws Exception {
         // Setup
         Integer userId = 4;
         List<Post> postServiceResponse = List.of(
@@ -89,7 +89,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void postController_createPost_returnsCreatedPost() throws Exception {
+    public void test_postController_createPost_returnsCreatedPost() throws Exception {
         // Setup
         Post post = new Post(null, 1, "image.com", "this is a caption", new Date(), "location");
         String postAsJSON = jsonConverter.convertPostToJSON(post);
@@ -113,7 +113,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void postController_deletePost_returnsStatus204() throws Exception {
+    public void test_postController_deletePost_returnsStatus204() throws Exception {
         // Setup
         Integer postId = 5;
         Mockito.when(postService.deletePost(postId)).thenReturn(true);
@@ -124,5 +124,19 @@ public class PostControllerTest {
 
         // Assert: successful deletion returns 204 status
         response.andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void test_postController_deletePost_returnsStatus500() throws Exception {
+        // Setup
+         Integer postId = 6;
+         Mockito.when(postService.deletePost(postId)).thenReturn(false);
+
+         // Action
+        ResultActions response = mockMvc.perform(delete("/posts")
+                .queryParam("id", Integer.toString(postId)));
+
+        // Assert: failed deletion returns 500 status
+        response.andExpect(status().isInternalServerError());
     }
 }
