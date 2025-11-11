@@ -10,4 +10,4 @@ RUN chmod +x mvnw
 # Build the app
 RUN ./mvnw clean package -DskipTests
 
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["java", "-jar", "target/sightsee-backend-0.0.1-SNAPSHOT.jar"]
