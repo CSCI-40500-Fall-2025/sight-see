@@ -6,14 +6,14 @@ on:
   pull_request:
     branches: [ "main" ]
 
-defaults:
-  run:
-    working-directory: ./sightsee-backend
-
 jobs:
   build-and-test:
 
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./sightsee-backend
 
     steps:
     - name: Checkout repo
