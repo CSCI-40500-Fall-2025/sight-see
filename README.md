@@ -10,6 +10,11 @@
 
 For New Yorkers who want to share their experiences of the city, SightSee is a web application (with mobile-friendly view) that allows users to post and caption geotagged photos, and view posts nearby. Unlike Instagram, which connects users around the world, our product is designed for users to interact with content in their geographic area.
 
+# Deployments
+[Frontend (On Vercel)](https://sight-see.vercel.app/)
+
+[Backend (On Render)](https://sight-see-backend.onrender.com)
+
 ## Layered Software Architecture
 
 ### Description
