@@ -44,9 +44,9 @@ jobs:
       
       - name: Trigger Vercel deployment
         run: |
-          curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
-              -H "Content-Type: application/json" \
-              -d '{"target": "production" }'
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"target": "production"}'
 
       - name: Create GitHub deployment
         uses: chrnorm/deployment-action@v2
