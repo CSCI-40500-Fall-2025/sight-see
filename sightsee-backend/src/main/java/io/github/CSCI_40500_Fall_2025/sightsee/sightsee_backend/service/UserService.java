@@ -65,7 +65,7 @@ public class UserService {
 
     public User getUserById(Integer userId) {
         try {
-            return userRepository.getUserById(userId);
+            return userRepository.getUserByUserId(userId);
         } catch (Exception e) {
             System.out.println("Error retrieving user with userId: " + userId + " " + e.getMessage());
             return null;

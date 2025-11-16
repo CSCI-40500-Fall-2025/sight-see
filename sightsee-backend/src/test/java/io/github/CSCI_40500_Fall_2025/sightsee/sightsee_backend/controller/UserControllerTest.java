@@ -37,7 +37,7 @@ public class UserControllerTest {
     public void userController_getUserById_returnsUser() throws Exception {
         // Setup
         Integer userId = 3;
-        User userServiceResponse = new User(userId, "Vessel", "vessel17", "vessel@gmail.com", "takemebacktoeden", "profilephoto.com");
+        User userServiceResponse = new User(userId, "Vessel", "vessel17", "vessel@gmail.com", "takemebacktoeden"/*, "profilephoto.com"*/);
         Mockito.when(userService.getUserById(userId)).thenReturn(userServiceResponse);
 
         // Action
