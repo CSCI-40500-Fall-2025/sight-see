@@ -4,6 +4,8 @@ import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserHttpResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.UserService;
 import org.apache.coyote.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -91,8 +94,10 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestParam(name = "id") Integer userId) {
         Boolean isDeleted = userService.deleteUser(userId);
         if (isDeleted) {
+            logger.info("User with id {} has been deleted", userId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        logger.error("User with id {} has not been successfully deleted", userId);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
