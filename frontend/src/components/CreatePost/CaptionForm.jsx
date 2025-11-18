@@ -3,9 +3,14 @@ import TextInput from "../TextInput";
 import Button from "../Button";
 
 function CaptionForm(props) {
-   const [selectMenu, setSelectMenu] = useState("0");
+   const [captionSelect, setCaptionSelect] = useState("0");
+   const [imageDetails, setImageDetails] = useState("");
    const [caption, setCaption] = useState("");
+   const [generatedCaption, setGeneratedCaption] = useState(false);
 
+   console.log(imageDetails);
+
+   const [generatedCaptionMood, setGeneratedCaptionMood] = useState("");
    const handleCaptionChange = (text) => {
       // Remove new lines from input
       const removedNewLines = text.replace(/[\r\n]+/g, "");
@@ -17,14 +22,33 @@ function CaptionForm(props) {
       setCaption(truncated);
    };
 
+   const handleImageDetailChange = (text) => {
+      // Remove new lines from input
+      const removedNewLines = text.replace(/[\r\n]+/g, "");
+
+      // Limit to 280 characters
+      const truncated = removedNewLines.slice(0, 280);
+
+      // Set the caption variable
+      setImageDetails(truncated);
+   };
+
+   const handleGenerate = async () => {
+      try {
+         console.log("Cools");
+      } catch (error) {
+         console.log(error);
+      }
+   };
+
    return (
       <div className="flex flex-col">
          <select
             className="select"
-            value={selectMenu}
+            value={captionSelect}
             onChange={(e) => {
                setCaption("");
-               setSelectMenu(e.target.value);
+               setCaptionSelect(e.target.value);
             }}
          >
             <option value="0" disabled>
@@ -35,7 +59,7 @@ function CaptionForm(props) {
             <option value="3">Generate a caption</option>
          </select>
 
-         {selectMenu === "2" && (
+         {captionSelect === "2" && (
             <>
                <label className="label">Add a caption!</label>
                <TextInput
@@ -48,17 +72,65 @@ function CaptionForm(props) {
             </>
          )}
 
-         {selectMenu === "3" && <div>add here later</div>}
+         {captionSelect === "3" && (
+            <>
+               <select
+                  className="select"
+                  value={generatedCaptionMood}
+                  onChange={(e) => {
+                     setGeneratedCaptionMood(e.target.value);
+                  }}
+               >
+                  <option value="" disabled>
+                     Choose a mood for your caption!
+                  </option>
+                  <option value="Happy">Happy</option>
+                  <option value="Sad">Sad</option>
+                  <option value="Anger">Anger</option>
+                  <option value="Excited">Excited</option>
+                  <option value="Disgust">Disgust</option>
+                  <option value="Silly">Silly</option>
+                  <option value="Surprise">Surprise</option>
+               </select>
 
-         {selectMenu !== "0" && (
-            <Button
-               func={() => {
-                  props.onSubmit(caption);
-               }}
-               title="Post!"
-               className="btn-lg	"
-            ></Button>
+               <label className="label">
+                  Optional: Add some context about the image!
+               </label>
+               <TextInput
+                  value={imageDetails}
+                  onChange={(e) => {
+                     handleImageDetailChange(e.target.value);
+                  }}
+                  placeholder="Optional: Add some context about the image!"
+               ></TextInput>
+
+               {generatedCaptionMood !== "" && (
+                  <Button
+                     func={() => {
+                        handleGenerate();
+                     }}
+                     title="Generate!"
+                     className="btn-lg	"
+                  ></Button>
+               )}
+            </>
          )}
+
+         {
+            // The post button
+            (captionSelect === "1" ||
+               captionSelect === "2" ||
+               // change this below
+               (captionSelect === "3" && generatedCaption)) && (
+               <Button
+                  func={() => {
+                     handleGenerate();
+                  }}
+                  title="Post!"
+                  className="btn-lg	"
+               ></Button>
+            )
+         }
       </div>
    );
 }
