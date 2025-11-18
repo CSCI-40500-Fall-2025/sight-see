@@ -10,6 +10,7 @@ import {
 export default function CreatePostPage() {
    const [imageFile, setImagePath] = useState(null);
    const [caption, setCaption] = useState("");
+   const [showImageUploadError, setShowImageUploadError] = useState(false);
 
    const handleCaptionChange = (text) => {
       // Remove new lines from input
@@ -136,6 +137,15 @@ export default function CreatePostPage() {
       }
    };
 
+   const handleImageUploadSuccess = (file) => {
+      setShowImageUploadError(false);
+      setImagePath(file);
+   };
+
+   const handleImageUploadError = () => {
+      setShowImageUploadError(true);
+   };
+
    return (
       <div>
          <Navbar></Navbar>
@@ -154,10 +164,26 @@ export default function CreatePostPage() {
                <>
                   <label className="label">Pick an Image to Upload!</label>
                   <ImageUpload
-                     onImageUpload={(file) => setImagePath(file)}
+                     onImageUpload={(file) => handleImageUploadSuccess(file)}
+                     onError={handleImageUploadError}
                   ></ImageUpload>
                </>
             )}
+
+            {showImageUploadError && (
+               <div style={{ color: "red" }}>
+                  Unsupported Image type. Try again.
+               </div>
+            )}
+
+            {
+               /** Remove this! After testing */
+               imageFile && (
+                  <div>
+                     {imageFile.name} <br></br> {imageFile.type}
+                  </div>
+               )
+            }
 
             {imageFile && (
                <>
@@ -179,28 +205,17 @@ export default function CreatePostPage() {
 }
 
 {
-   /** Flow:
-    *       On create button click from main page: under profile dropdown
-    *       Nav to new page
-    *       Here, you can upload an image (temp, will change to taking a picture soon!)   : ImageUpload component
-    *       Once the picture is uploaded, display it and bring up a caption input box     : ImageDisplay and TextInput components
-    *       Here the user inputs a short comment
-    *          Validate: maybe short captions only                                        : handlecaptionChange
-    *       Once the comment is good:                                                     : NOT present
-    *             Present a button that will signal to user to create post
+   /** ML Component Flow:
+    *    If a user uploads a heic image, make them choose again
     *
-    *       Once the button is pressed                                                    : handleSubmit
+    *    Once image is display, give user three options for captioning:
+    *       No caption wanted
+    *       User enters their own caption
+    *       User can generate a caption
+    *          If user decides to generate a caption:
+    *             Ask them for a mood.
+    *             Ask them to provide some details about what the picture means to them: maybe ask them what memory comes up in this image, or something
     *
-    *          Further validate comment input text                                        : validateCaptionInput
-    *          Get the image data                                                         : NOT present
-    *          Try to get the location of user first                                      : getLocation
-    *             if fail, then stop and bring up error
-    *          Package everything and post to backend
-    *
-    *          Wait for response
-    *             If good, do something TODO
-    *                Suggestions: navigate back to main page with some sort of refresh happening to the map?
-    *             If bad, post error
     *
     *
     *    Potential Issues:

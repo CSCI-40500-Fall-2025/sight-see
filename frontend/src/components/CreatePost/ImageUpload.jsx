@@ -17,12 +17,16 @@ export default function ImageUpload(props) {
          return;
       }
 
+      // If the image is in heic format, reject the image
+      if (image.type.startsWith("image/heic")) {
+         props.onError();
+         return;
+      }
       // Return to parent component with chosen image file
       props.onImageUpload(image);
    };
 
    const validateImage = (image) => {
-      // TODO: check to see
       if (image.type.startsWith("image/")) {
          return true;
       }
