@@ -9,3 +9,4 @@ export { default as CommentSection } from "./CommentSection";
 export { default as TextInput } from "./TextInput";
 export { default as ImageUpload } from "./CreatePost/ImageUpload";
 export { default as ImageDisplay } from "./CreatePost/ImageDisplay";
+export { default as CaptionForm } from "./CreatePost/CaptionForm";

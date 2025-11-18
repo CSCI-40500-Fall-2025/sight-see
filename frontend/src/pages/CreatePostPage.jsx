@@ -5,23 +5,12 @@ import {
    ImageDisplay,
    TextInput,
    Button,
+   CaptionForm,
 } from "../components";
 
 export default function CreatePostPage() {
    const [imageFile, setImagePath] = useState(null);
-   const [caption, setCaption] = useState("");
    const [showImageUploadError, setShowImageUploadError] = useState(false);
-
-   const handleCaptionChange = (text) => {
-      // Remove new lines from input
-      const removedNewLines = text.replace(/[\r\n]+/g, "");
-
-      // Limit to 280 characters
-      const truncated = removedNewLines.slice(0, 280);
-
-      // Set the caption variable
-      setCaption(truncated);
-   };
 
    // Function to get the current location of user
    const getLocation = async () => {
@@ -50,7 +39,7 @@ export default function CreatePostPage() {
     *    Must only contain letters, numbers, and punctuation or emojis?
     *    Check for SQl injection
     */
-   const validateCaptionInput = () => {
+   const validateCaptionInput = (caption) => {
       const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}]{0,280}$/u;
 
       // Case Sensitive: will not match 'select'
@@ -107,11 +96,12 @@ export default function CreatePostPage() {
       return true;
    };
 
-   const handleSubmit = async () => {
+   const handleSubmit = async (caption) => {
       const isValidCaption = validateCaptionInput(caption);
 
       if (!isValidCaption) {
          // Error handling TODO
+         console.log("bad caption");
          return;
       }
 
@@ -185,20 +175,7 @@ export default function CreatePostPage() {
                )
             }
 
-            {imageFile && (
-               <>
-                  <label className="label">Add a caption!</label>
-                  <TextInput
-                     value={caption}
-                     onChange={(e) => {
-                        handleCaptionChange(e.target.value);
-                     }}
-                     placeholder="Add a caption to your photo!"
-                  ></TextInput>
-               </>
-            )}
-
-            {imageFile && <Button func={handleSubmit} title="Post!"></Button>}
+            {imageFile && <CaptionForm onSubmit={handleSubmit}></CaptionForm>}
          </fieldset>
       </div>
    );
