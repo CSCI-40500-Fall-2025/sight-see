@@ -10,7 +10,8 @@ function CaptionForm(props) {
    const [captionSelect, setCaptionSelect] = useState("0");
    const [caption, setCaption] = useState("");
 
-   const [generatedCaption, setGeneratedCaption] = useState(false); // For caption generation, mark when generation is complete
+   const [generatedCaption, setGeneratedCaption] = useState(false); // For after caption generation, mark when generation is complete
+   const [generating, setGenerating] = useState(false); // For during caption generation, active only when generating
    const [generatedCaptionMood, setGeneratedCaptionMood] = useState("None");
    const [imageContext, setImageContext] = useState("");
 
@@ -97,7 +98,7 @@ function CaptionForm(props) {
          };
 
          // Prepare something to indicated waiting time
-         console.log("waiting");
+         setGenerating(true);
 
          // Post
          const response = await axios.post(
@@ -105,12 +106,29 @@ function CaptionForm(props) {
             body
          );
 
-         console.log(response.data.candidates[0].content.parts[0].text);
+         setGenerating(false);
+         setGeneratedCaption(true);
+         handleCaptionChange(response.data.candidates[0].content.parts[0].text);
+         setCaptionSelect("2"); // prevent user from generating another caption
 
-         // remove the context box, the generate button, and put the response into a textfield, and then add post button
+         console.log(caption);
+
+         {
+            //
+            /** TODO:
+             * refactor code so that control is back in the createpostpage component
+             * fill out handle submit
+             *
+             */
+         }
       } catch (error) {
+         setGenerating(false);
          console.log(error);
       }
+   };
+
+   const handleSubmit = () => {
+      props.onSubmit(caption);
    };
 
    return (
@@ -119,7 +137,6 @@ function CaptionForm(props) {
             className="select"
             value={captionSelect}
             onChange={(e) => {
-               setCaption("");
                setCaptionSelect(e.target.value);
             }}
          >
@@ -128,7 +145,9 @@ function CaptionForm(props) {
             </option>
             <option value="1">No caption</option>
             <option value="2">Write your own caption</option>
-            <option value="3">Generate a caption</option>
+            <option value="3" disabled={generatedCaption}>
+               Generate a caption
+            </option>
          </select>
 
          {captionSelect === "2" && (
@@ -144,7 +163,7 @@ function CaptionForm(props) {
             </>
          )}
 
-         {captionSelect === "3" && (
+         {captionSelect === "3" && !generatedCaption && (
             <>
                <select
                   className="select"
@@ -153,8 +172,8 @@ function CaptionForm(props) {
                      setGeneratedCaptionMood(e.target.value);
                   }}
                >
-                  <option value="None" disabled>
-                     Choose a mood for your caption!
+                  <option value="None">
+                     Choose an optional mood for your caption!
                   </option>
                   <option value="Happy">Happy</option>
                   <option value="Sad">Sad</option>
@@ -176,7 +195,7 @@ function CaptionForm(props) {
                   placeholder="Optional: Add some context about the image!"
                ></TextInput>
 
-               {generatedCaptionMood !== "" && (
+               {!generatedCaption && !generating && (
                   <Button
                      func={() => {
                         handleGenerate();
@@ -192,6 +211,23 @@ function CaptionForm(props) {
             </>
          )}
 
+         {captionSelect === "3" && generating && (
+            <span className="loading loading-spinner loading-xl"></span>
+         )}
+
+         {captionSelect === "3" && generatedCaption && (
+            <>
+               <label className="label">View your caption!</label>
+               <TextInput
+                  value={caption}
+                  onChange={(e) => {
+                     handleCaptionChange(e.target.value);
+                  }}
+                  placeholder=""
+               ></TextInput>
+            </>
+         )}
+
          {
             // The post button
             (captionSelect === "1" ||
@@ -200,7 +236,7 @@ function CaptionForm(props) {
                (captionSelect === "3" && generatedCaption)) && (
                <Button
                   func={() => {
-                     handleGenerate();
+                     handleSubmit();
                   }}
                   title="Post!"
                   className="btn-lg	"
