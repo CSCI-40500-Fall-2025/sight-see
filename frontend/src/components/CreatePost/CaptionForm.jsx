@@ -1,16 +1,19 @@
 import { useState } from "react";
 import TextInput from "../TextInput";
 import Button from "../Button";
+import axios from "axios";
 
 function CaptionForm(props) {
+   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+   const GEMINI_MODEL = import.meta.env.VITE_GEMINI_MODEL;
+
    const [captionSelect, setCaptionSelect] = useState("0");
-   const [imageDetails, setImageDetails] = useState("");
    const [caption, setCaption] = useState("");
-   const [generatedCaption, setGeneratedCaption] = useState(false);
 
-   console.log(imageDetails);
+   const [generatedCaption, setGeneratedCaption] = useState(false); // For caption generation, mark when generation is complete
+   const [generatedCaptionMood, setGeneratedCaptionMood] = useState("None");
+   const [imageContext, setImageContext] = useState("");
 
-   const [generatedCaptionMood, setGeneratedCaptionMood] = useState("");
    const handleCaptionChange = (text) => {
       // Remove new lines from input
       const removedNewLines = text.replace(/[\r\n]+/g, "");
@@ -22,7 +25,7 @@ function CaptionForm(props) {
       setCaption(truncated);
    };
 
-   const handleImageDetailChange = (text) => {
+   const handleImageContextChange = (text) => {
       // Remove new lines from input
       const removedNewLines = text.replace(/[\r\n]+/g, "");
 
@@ -30,12 +33,81 @@ function CaptionForm(props) {
       const truncated = removedNewLines.slice(0, 280);
 
       // Set the caption variable
-      setImageDetails(truncated);
+      setImageContext(truncated);
+   };
+
+   const readImage = (imageFile) => {
+      return new Promise((resolve, reject) => {
+         const reader = new FileReader();
+
+         reader.onloadend = (e) => {
+            // Strip the uri at the beginning of string
+            // Request only needs the raw base64
+            const stripped = e.target.result.replace(
+               /^data:image\/\w+;base64,/,
+               ""
+            );
+
+            resolve(stripped);
+         };
+
+         reader.readAsDataURL(imageFile);
+
+         reader.onerror = (error) => reject(error);
+      });
    };
 
    const handleGenerate = async () => {
       try {
-         console.log("Cools");
+         // Can refine prompt?
+         const prompt = JSON.stringify(`
+         User Context: ${imageContext}
+         Mood/Tone: ${generatedCaptionMood}
+         Task:
+         1. Analyze the provided image internally and understand what is shown.
+         2. Generate one social media caption (1–280 characters) following these rules:
+            a. If mood is provided, the caption must follow that mood.
+            b. If mood = None, generate the caption using only the image content + context.
+            c. If context = None, generate the caption using only the image content.
+            d. If both mood and context are missing, generate a natural caption based solely on the image content.
+         3. Output only the final caption. No explanations, no image descriptions, no metadata, and no extra text.
+         `);
+
+         // Get image data as base64
+         const base64 = await readImage(props.imageFile);
+
+         console.log("Image:", base64);
+
+         // Prepare body of request
+         const body = {
+            contents: {
+               role: "USER",
+               parts: [
+                  {
+                     inlineData: {
+                        data: base64,
+                        mimeType: props.imageFile.type,
+                     },
+                  },
+                  {
+                     text: prompt,
+                  },
+               ],
+            },
+         };
+
+         // Prepare something to indicated waiting time
+         console.log("waiting");
+
+         // Post
+         const response = await axios.post(
+            `https://aiplatform.googleapis.com/v1/publishers/google/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+            body
+         );
+
+         console.log(response.data.candidates[0].content.parts[0].text);
+
+         // remove the context box, the generate button, and put the response into a textfield, and then add post button
       } catch (error) {
          console.log(error);
       }
@@ -81,7 +153,7 @@ function CaptionForm(props) {
                      setGeneratedCaptionMood(e.target.value);
                   }}
                >
-                  <option value="" disabled>
+                  <option value="None" disabled>
                      Choose a mood for your caption!
                   </option>
                   <option value="Happy">Happy</option>
@@ -97,9 +169,9 @@ function CaptionForm(props) {
                   Optional: Add some context about the image!
                </label>
                <TextInput
-                  value={imageDetails}
+                  value={imageContext}
                   onChange={(e) => {
-                     handleImageDetailChange(e.target.value);
+                     handleImageContextChange(e.target.value);
                   }}
                   placeholder="Optional: Add some context about the image!"
                ></TextInput>
@@ -113,6 +185,10 @@ function CaptionForm(props) {
                      className="btn-lg	"
                   ></Button>
                )}
+
+               {/** MODEL CHOSEN: gemini-2.5-flash-lite
+                * Send image + prompt to model
+                */}
             </>
          )}
 
@@ -135,3 +211,5 @@ function CaptionForm(props) {
    );
 }
 export default CaptionForm;
+
+/** MESSY! Change it so that CreatePostPage controls state instead of whatever this is right now */

@@ -9,7 +9,7 @@ import {
 } from "../components";
 
 export default function CreatePostPage() {
-   const [imageFile, setImagePath] = useState(null);
+   const [imageFile, setImageFile] = useState(null);
    const [showImageUploadError, setShowImageUploadError] = useState(false);
 
    // Function to get the current location of user
@@ -129,7 +129,7 @@ export default function CreatePostPage() {
 
    const handleImageUploadSuccess = (file) => {
       setShowImageUploadError(false);
-      setImagePath(file);
+      setImageFile(file);
    };
 
    const handleImageUploadError = () => {
@@ -175,7 +175,12 @@ export default function CreatePostPage() {
                )
             }
 
-            {imageFile && <CaptionForm onSubmit={handleSubmit}></CaptionForm>}
+            {imageFile && (
+               <CaptionForm
+                  onSubmit={handleSubmit}
+                  imageFile={imageFile}
+               ></CaptionForm>
+            )}
          </fieldset>
       </div>
    );
@@ -192,14 +197,5 @@ export default function CreatePostPage() {
     *          If user decides to generate a caption:
     *             Ask them for a mood.
     *             Ask them to provide some details about what the picture means to them: maybe ask them what memory comes up in this image, or something
-    *
-    *
-    *
-    *    Potential Issues:
-    *       IPhone image format is NOT supported on all major browsers (only Safari (and maybe IOS browsers using WebKit (so all of them)))
-    *          So, any images in this format must be changed!
-    *
-    *          Ignore for now, since this will most likely depends on how taking a picture will be implemented
-    *          Just use pictures in png format for current testing
     */
 }

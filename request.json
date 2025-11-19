@@ -1,0 +1,16 @@
+{
+   "contents": {
+      "role": "USER",
+      "parts": [
+         {
+            "fileData": {
+               "fileUri": "https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvam9iNjgwLTE2Ni1wLWwxZGJ1cTN2LnBuZw.png",
+               "mimeType": "image/png"
+            }
+         },
+         {
+            "text": "User Context: A blue butterfly named Dave enjoying a peaceful moment in nature.\nMood/Tone: sad\nTask:\n1. Analyze the provided image internally and understand what is shown.\n2. Generate one social media caption (1–280 characters) following these rules:\n   a. If mood is provided, the caption must follow that mood.\n   b. If mood = None, the caption must use only the image content + context.\n   c. If context = None, the caption must use only the image content.\n   d. If both mood and context are missing, generate a natural caption based solely on the image content.\n3. Output only the final caption. No explanations, no image descriptions, no metadata, and no extra text."
+         }
+      ]
+   }
+}
