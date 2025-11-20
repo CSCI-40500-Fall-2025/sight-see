@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,6 +41,8 @@ public class PostControllerTest {
 
     private final JsonConverter jsonConverter = new JsonConverter();
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void test_postController_getAllPosts_returnsAllPosts() throws Exception {
         // Setup
@@ -54,12 +58,18 @@ public class PostControllerTest {
         // Action
         ResultActions response = mockMvc.perform(get("/posts"));
 
-        // Assert: correct status
-        response.andExpect(status().isOk());
-        // Assert: number of objects in API response == number of objects received by postService
-        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
-        List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
-        Assertions.assertEquals(responseContentAsObjectList.size(), postServiceResponse.size());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isOk());
+            // Assert: number of objects in API response == number of objects received by postService
+            String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+            List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
+            Assertions.assertEquals(responseContentAsObjectList.size(), postServiceResponse.size());
+        } catch (Exception e) {
+            logger.error("Test to get all posts failed");
+            throw e;
+        }
+        logger.info("Test to get all posts succeeded");
     }
 
     @Test
@@ -76,16 +86,22 @@ public class PostControllerTest {
         ResultActions response = mockMvc.perform(get("/posts/all-by-user")
                 .queryParam("id", Integer.toString(userId)));
 
-        // Assert: correct status
-        response.andExpect(status().isOk());
-        // Assert: number of objects in API response == number of objects received by postService
-        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
-        List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
-        Assertions.assertEquals(postServiceResponse.size(), responseContentAsObjectList.size());
-        // Assert: all returned posts are of the requested userId
-        for (Post post : responseContentAsObjectList) {
-            Assertions.assertEquals(userId, post.getUserId());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isOk());
+            // Assert: number of objects in API response == number of objects received by postService
+            String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+            List<Post> responseContentAsObjectList = jsonConverter.convertJsonToPostList(responseContentAsJSON);
+            Assertions.assertEquals(postServiceResponse.size(), responseContentAsObjectList.size());
+            // Assert: all returned posts are of the requested userId
+            for (Post post : responseContentAsObjectList) {
+                Assertions.assertEquals(userId, post.getUserId());
+            }
+        } catch (Exception e) {
+            logger.error("Test to get all posts by user failed");
+            throw e;
         }
+        logger.info("Test to get all posts by user succeeded");
     }
 
     @Test
@@ -101,44 +117,60 @@ public class PostControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(postAsJSON));
 
-        // Assert: correct status
-        response.andExpect(status().isCreated());
-        // Assert: returned post matches the post passed into controller
-        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
-        Post responseContentAsPostObject = jsonConverter.convertJsonToPost(responseContentAsJSON);
-        Assertions.assertEquals(post.getUserId(), responseContentAsPostObject.getUserId());
-        Assertions.assertEquals(post.getImageUrl(), responseContentAsPostObject.getImageUrl());
-        Assertions.assertEquals(post.getCaption(), responseContentAsPostObject.getCaption());
-        Assertions.assertEquals(post.getLocationCoordinates(), responseContentAsPostObject.getLocationCoordinates());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isCreated());
+            // Assert: returned post matches the post passed into controller
+            String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+            Post responseContentAsPostObject = jsonConverter.convertJsonToPost(responseContentAsJSON);
+            Assertions.assertEquals(post.getUserId(), responseContentAsPostObject.getUserId());
+            Assertions.assertEquals(post.getImageUrl(), responseContentAsPostObject.getImageUrl());
+            Assertions.assertEquals(post.getCaption(), responseContentAsPostObject.getCaption());
+            Assertions.assertEquals(post.getLocationCoordinates(), responseContentAsPostObject.getLocationCoordinates());
+        } catch (Exception e) {
+            logger.error("Test to create post failed");
+            throw e;
+        }
+        logger.info("Test to create post succeeded");
     }
 
     @Test
     public void test_postController_deletePost_returnsStatus204() throws Exception {
         // Setup
         Integer postId = 5;
-//        Mockito.when(postService.deletePost(postId)).thenReturn(true);
         Mockito.doNothing().when(postService).deletePost(postId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/posts")
                 .queryParam("id", Integer.toString(postId)));
 
-        // Assert: successful deletion returns 204 status
-        response.andExpect(status().isNoContent());
+        try {
+            // Assert: successful deletion returns 204 status
+            response.andExpect(status().isNoContent());
+        } catch (Exception e) {
+            logger.error("Test to successfully delete post failed");
+            throw new RuntimeException(e);
+        }
+        logger.info("Test to successfully delete post succeeded");
     }
 
     @Test
     public void test_postController_deletePost_returnsStatus500() throws Exception {
         // Setup
          Integer postId = 6;
-//         Mockito.when(postService.deletePost(postId)).thenReturn(false);
         Mockito.doThrow(new Exception()).when(postService).deletePost(postId);
 
          // Action
         ResultActions response = mockMvc.perform(delete("/posts")
                 .queryParam("id", Integer.toString(postId)));
 
-        // Assert: failed deletion returns 500 status
-        response.andExpect(status().isInternalServerError());
+        try {
+            // Assert: failed deletion returns 500 status
+            response.andExpect(status().isInternalServerError());
+        } catch (Exception e) {
+            logger.error("Test to fail to delete post failed");
+            throw e;
+        }
+        logger.info("Test to fail to delete post succeeded");
     }
 }

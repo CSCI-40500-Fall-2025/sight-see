@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,6 +39,8 @@ public class UserControllerTest {
 
     private final JsonConverter jsonConverter = new JsonConverter();
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void test_userController_getUserById_returnsUser() throws Exception {
         // Setup
@@ -48,12 +52,18 @@ public class UserControllerTest {
         ResultActions response = mockMvc.perform(get("/users/by-id")
                 .queryParam("id", Integer.toString(userId)));
 
-        // Assert: correct status
-        response.andExpect(status().isOk());
-        // Assert: response userId == queried userId
-        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
-        UserHttpResponse responseContentAsObject = jsonConverter.convertJsonToUserHttpResponseObject(responseContentAsJSON);
-        Assertions.assertEquals(userId, responseContentAsObject.getUserId());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isOk());
+            // Assert: response userId == queried userId
+            String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+            UserHttpResponse responseContentAsObject = jsonConverter.convertJsonToUserHttpResponseObject(responseContentAsJSON);
+            Assertions.assertEquals(userId, responseContentAsObject.getUserId());
+        } catch (Exception e) {
+            logger.error("Test to get user by ID failed");
+            throw e;
+        }
+        logger.info("Test to get user by ID succeeded");
     }
 
     @Test
@@ -67,21 +77,24 @@ public class UserControllerTest {
         ResultActions response = mockMvc.perform(get("/users/by-email")
                 .queryParam("email", email));
 
-        // Assert: correct status
-        response.andExpect(status().isOk());
-        // Assert: response email == queried email
-        String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
-        UserHttpResponse responseContentAsObject = jsonConverter.convertJsonToUserHttpResponseObject(responseContentAsJSON);
-        Assertions.assertEquals(email, responseContentAsObject.getEmail());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isOk());
+            // Assert: response email == queried email
+            String responseContentAsJSON = response.andReturn().getResponse().getContentAsString();
+            UserHttpResponse responseContentAsObject = jsonConverter.convertJsonToUserHttpResponseObject(responseContentAsJSON);
+            Assertions.assertEquals(email, responseContentAsObject.getEmail());
+        } catch (Exception e) {
+            logger.error("Test to get user by email failed");
+            throw e;
+        }
+        logger.info("Test to get user by email succeeded");
     }
 
     @Test
     public void test_userController_getUserByEmail_returnsStatus404() throws Exception {
         // Setup
         String email = "johnfrusciante@gmail.com";
-//        User userServiceResponse = new User();
-//        userServiceResponse.setUserId(-1);;
-//        Mockito.when(userService.getUserByEmail(email)).thenReturn(userServiceResponse);
         Mockito.when(userService.getUserByEmail(email))
                .thenThrow(new NoSuchElementException());
 
@@ -89,37 +102,53 @@ public class UserControllerTest {
         ResultActions response = mockMvc.perform(get("/users/by-email")
                 .queryParam("email", email));
 
-        // Assert: correct status
-        response.andExpect(status().isNotFound());
+        try {
+            // Assert: correct status
+            response.andExpect(status().isNotFound());
+        } catch (Exception e) {
+            logger.error("Test for getUserByEmail() returns 'not found' failed");
+            throw e;
+        }
+        logger.info("Test for getUserByEmail() returns 'not found' succeeded");
     }
 
     @Test
     public void test_userController_deleteUser_returnsStatus204() throws Exception {
         // Setup
         Integer userId = 5;
-//        Mockito.when(userService.deleteUser(userId)).thenReturn(true);
         Mockito.doNothing().when(userService).deleteUser(userId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/users")
                 .queryParam("id", Integer.toString(userId)));
 
-        // Assert: successful deletion returns 204 status
-        response.andExpect(status().isNoContent());
+        try {
+            // Assert: successful deletion returns 204 status
+            response.andExpect(status().isNoContent());
+        } catch (Exception e) {
+            logger.error("Test to successfully delete user failed");
+            throw e;
+        }
+        logger.info("Test to successfully delete user succeeded");
     }
 
     @Test
     public void test_userController_deleteUser_returnsStatus500() throws Exception {
         // Setup
         Integer userId = 6;
-//        Mockito.when(userService.deleteUser(userId)).thenReturn(false);
         Mockito.doThrow(new Exception()).when(userService).deleteUser(userId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/users")
                 .queryParam("id", Integer.toString(userId)));
 
-        // Assert: failed deletion returns 500 status
-        response.andExpect(status().isInternalServerError());
+        try {
+            // Assert: failed deletion returns 500 status
+            response.andExpect(status().isInternalServerError());
+        } catch (Exception e) {
+            logger.error("Test to fail to delete user failed");
+            throw e;
+        }
+        logger.info("Test to fail to delete user succeeded");
     }
 }
