@@ -3,9 +3,11 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.PostRepository;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.UserRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
@@ -15,48 +17,47 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws Exception {
         try {
             return userRepository.findAll();
         } catch (Exception e) {
-            System.out.println("Error retrieving all users: " + e.getMessage());
-            return null;
+            throw new Exception(e.getMessage(), e);
         }
     }
 
-    public User getUserById(Integer userId) {
+    public User getUserById(Integer userId) throws Exception {
         try {
-            return userRepository.getUserById(userId);
+            User user = userRepository.getUserById(userId);
+            if (user != null) {
+                return user;
+            }
+            throw new NoSuchElementException();
         } catch (Exception e) {
-            System.out.println("Error retrieving user with userId " + userId + ": " + e.getMessage());
-            return null;
+            throw new Exception(e.getMessage(), e);
         }
     }
 
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(String email) throws Exception {
         try {
             User user = userRepository.getUserByEmail(email);
             if (user != null) {
                 return user;
             }
-            // User not found
-            user = new User();
-            user.setUserId(-1);
-            return user;
+            throw new NoSuchElementException();
         } catch (Exception e) {
-            System.out.println("Error retrieving user with email " + email + ": " + e.getMessage());
-            return null;
+            throw new Exception(e.getMessage(), e);
         }
     }
 
-    public Boolean deleteUser(Integer userId) {
+    public void deleteUser(Integer userId) throws Exception {
+        if (!userRepository.existsById(userId)) {
+            throw new NoSuchElementException();
+        }
         try {
             userRepository.deleteById(userId);
             // delete all posts by user as well
-            return !userRepository.existsById(userId);
         } catch (Exception e) {
-            System.out.println("Error deleting user with userId " + userId + ": " + e.getMessage());
-            return false;
+            throw new Exception(e.getMessage(), e);
         }
     }
 }

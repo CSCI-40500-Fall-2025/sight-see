@@ -16,6 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.NoSuchElementException;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -77,9 +79,11 @@ public class UserControllerTest {
     public void test_userController_getUserByEmail_returnsStatus404() throws Exception {
         // Setup
         String email = "johnfrusciante@gmail.com";
-        User userServiceResponse = new User();
-        userServiceResponse.setUserId(-1);;
-        Mockito.when(userService.getUserByEmail(email)).thenReturn(userServiceResponse);
+//        User userServiceResponse = new User();
+//        userServiceResponse.setUserId(-1);;
+//        Mockito.when(userService.getUserByEmail(email)).thenReturn(userServiceResponse);
+        Mockito.when(userService.getUserByEmail(email))
+               .thenThrow(new NoSuchElementException());
 
         // Action
         ResultActions response = mockMvc.perform(get("/users/by-email")
@@ -93,7 +97,8 @@ public class UserControllerTest {
     public void test_userController_deleteUser_returnsStatus204() throws Exception {
         // Setup
         Integer userId = 5;
-        Mockito.when(userService.deleteUser(userId)).thenReturn(true);
+//        Mockito.when(userService.deleteUser(userId)).thenReturn(true);
+        Mockito.doNothing().when(userService).deleteUser(userId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/users")
@@ -107,7 +112,8 @@ public class UserControllerTest {
     public void test_userController_deleteUser_returnsStatus500() throws Exception {
         // Setup
         Integer userId = 6;
-        Mockito.when(userService.deleteUser(userId)).thenReturn(false);
+//        Mockito.when(userService.deleteUser(userId)).thenReturn(false);
+        Mockito.doThrow(new Exception()).when(userService).deleteUser(userId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/users")

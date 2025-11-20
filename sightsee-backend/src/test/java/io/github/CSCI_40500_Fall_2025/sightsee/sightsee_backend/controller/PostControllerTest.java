@@ -116,7 +116,8 @@ public class PostControllerTest {
     public void test_postController_deletePost_returnsStatus204() throws Exception {
         // Setup
         Integer postId = 5;
-        Mockito.when(postService.deletePost(postId)).thenReturn(true);
+//        Mockito.when(postService.deletePost(postId)).thenReturn(true);
+        Mockito.doNothing().when(postService).deletePost(postId);
 
         // Action
         ResultActions response = mockMvc.perform(delete("/posts")
@@ -130,7 +131,8 @@ public class PostControllerTest {
     public void test_postController_deletePost_returnsStatus500() throws Exception {
         // Setup
          Integer postId = 6;
-         Mockito.when(postService.deletePost(postId)).thenReturn(false);
+//         Mockito.when(postService.deletePost(postId)).thenReturn(false);
+        Mockito.doThrow(new Exception()).when(postService).deletePost(postId);
 
          // Action
         ResultActions response = mockMvc.perform(delete("/posts")
