@@ -1,4 +1,7 @@
+[![Java CI with Maven](https://github.com/CSCI-40500-Fall-2025/sight-see/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/CSCI-40500-Fall-2025/sight-see/actions/workflows/backend-ci.yml)
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/_KG6YNPd)
+
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=20220791)
 
 # Group 3
@@ -6,6 +9,11 @@
 ## Product Vision
 
 For New Yorkers who want to share their experiences of the city, SightSee is a web application (with mobile-friendly view) that allows users to post and caption geotagged photos, and view posts nearby. Unlike Instagram, which connects users around the world, our product is designed for users to interact with content in their geographic area.
+
+# Deployments
+[Frontend (On Vercel)](https://sight-see.vercel.app/)
+
+[Backend (On Render)](https://sight-see-backend.onrender.com)
 
 ## Layered Software Architecture
 
@@ -34,47 +42,6 @@ The choice of technologies chosen for our software were influenced by the qualit
 <img src="https://github.com/user-attachments/assets/dc012920-9a3b-4c78-8c83-a1f293aa542d" alt="Software architecture diagram" width="450" height="450">
 
 ---
-
-## First Prototype Instructions (v0.0.1)
-
-Install the prototype APK on a Android phone. Make sure setting to Install Unknown Apps is turned on. Launch the app.
-
-### Features
-
-Start Page: Click "New User" button
-
-Login Page: Input any text in both fields, then click login
-
-Map Screen: Click on map image, or click on menu Icon
-
-Post View: View sample Post and Comments
-
-## Prototype Extension Instructions (v0.0.2)
-
-### Features
-
-#### Pages and navigation
-- **User Authentication**
-  1. Choose user type - click either sign up or login button
-  2. Login page — click **Login** to proceed to the Main Page  
-  3. Sign Up page — click **Sign Up** to proceed to the Main Page  
-
-- **Main Page** — displays a map with nearby posts  
-  - Click **red pins** to view individual post pages  
-  - **Note:** Nearby pins are hardcoded around **Hunter College**.  
-    If your current location is elsewhere, pan to Hunter College area to view nearby pins.  
-
-- **Dummy Post Page** - click on pins from main page to navigate to dummy posts
-
-- **User Profile** — click the profile picture in the upper-right navigation bar  
-
-- **User Settings** — click the profile picture in the upper-right navigation bar
-
-#### Map Features
-- **Interactive map interface** — pan, zoom, and explore nearby locations  
-- **Current Geolocation** — represented by a blue circle with a white outline
-    - Must enable Geolocation for this feature
-- **Pins** — indicate nearby posts (hardcoded for demonstration)  
 
 ### Running the Frontend
 
@@ -108,8 +75,3 @@ Post View: View sample Post and Comments
     ```
 
 4. Open the local URL shown in the terminal (usually [http://localhost:5173](http://localhost:5173)) in your browser.
-
----
-
-**Note:**  
-If you encounter issues, make sure your Node.js and npm versions meet the prerequisites above.

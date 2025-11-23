@@ -1,32 +1,24 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
-import jakarta.persistence.*;
+public class UserHttpResponse {
 
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
     private Integer userId;
     private String name;
     private String username;
     private String email;
-    private String password;
     private String profilePhotoUrl;
 
 
-    public User() {
+    public UserHttpResponse() {
+
     }
 
-    public User(Integer userId, String name, String username, String email, String password/*, String profilePhotoUrl*/) {
+    public UserHttpResponse(Integer userId, String name, String username, String email, String profilePhotoUrl) {
         this.userId = userId;
         this.name = name;
         this.username = username;
         this.email = email;
-        this.password = password;
-//        this.profilePhotoUrl = profilePhotoUrl;   //profile photo is not stored before user is created
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 
     public Integer getUserId() {
@@ -61,14 +53,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getProfilePhotoUrl() {
         return profilePhotoUrl;
     }
@@ -76,5 +60,4 @@ public class User {
     public void setProfilePhotoUrl(String profilePhotoUrl) {
         this.profilePhotoUrl = profilePhotoUrl;
     }
-
 }

@@ -3,7 +3,7 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.utility;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserHttpResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public class JsonConverter {
         return objectMapper.readValue(jsonString, new TypeReference<Post>() {});
     }
 
-    public User convertJsonToUserObject(String jsonString) throws Exception {
+    public UserHttpResponse convertJsonToUserHttpResponseObject(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonString, new TypeReference<User>() {});
+        return objectMapper.readValue(jsonString, new TypeReference<UserHttpResponse>() {});
     }
 }

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
-//TODO: improve exception types and messages
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -18,30 +18,57 @@ public class UserService {
 
     public UserService(UserRepository userRepository, S3Service s3Service) {
         this.userRepository = userRepository;
-        this.s3Service = s3Service;
     }
 
-    //not relevant
-//    public List<User> getAllUsers() {
+    //irrelevant
+//    public List<User> getAllUsers() throws Exception {
 //        try {
 //            return userRepository.findAll();
 //        } catch (Exception e) {
-//            System.out.println("Error retrieving all users: " + e.getMessage());
-//            return null;
+//            throw new Exception(e.getMessage(), e);
 //        }
 //    }
 
     private void throwIfUserNotFound(Integer userId) {
         //if user ID not in database
-            //throw new ?NotFoundException("User not found");
+        //throw new ?NotFoundException("User not found");
     }
 
-//    public void checkIfUserExists(Long userId) {
-//        Optional<User> user = userRepository.findById(userId);
-//        if (user.isEmpty()) {
-//            throw new ObjectNotFoundException(userId, "User");
-//        }
-//    }
+    public User getUserById(Integer userId) throws Exception {
+        try {
+            User user = userRepository.getUserById(userId);
+            if (user != null) {
+                return user;
+            }
+            throw new NoSuchElementException();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+    }
+
+    public User getUserByEmail(String email) throws Exception {
+        try {
+            User user = userRepository.getUserByEmail(email);
+            if (user != null) {
+                return user;
+            }
+            throw new NoSuchElementException();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+    }
+
+    public void deleteUser(Integer userId) throws Exception {
+        if (!userRepository.existsById(userId)) {
+            throw new NoSuchElementException();
+        }
+        try {
+            userRepository.deleteById(userId);
+            // delete all posts by user as well
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+    }
 
     //overwrites any preexisting object with matching key
     public void uploadProfilePhoto(Integer userId, MultipartFile file) {
@@ -61,15 +88,6 @@ public class UserService {
         User user = userRepository.getUserByUserId(userId);
         return s3Service.getObject(profilePhotosBucket,
                                    userId.toString());
-    }
-
-    public User getUserById(Integer userId) {
-        try {
-            return userRepository.getUserByUserId(userId);
-        } catch (Exception e) {
-            System.out.println("Error retrieving user with userId: " + userId + " " + e.getMessage());
-            return null;
-        }
     }
 
 //    public byte[] getProfilePhoto(Long userId) {
