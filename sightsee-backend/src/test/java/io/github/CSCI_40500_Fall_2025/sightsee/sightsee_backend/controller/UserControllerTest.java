@@ -33,7 +33,7 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+//    @Autowired
     @MockitoBean
     private UserService userService;
 
@@ -44,8 +44,12 @@ public class UserControllerTest {
     @Test
     public void test_userController_getUserById_returnsUser() throws Exception {
         // Setup
-        Integer userId = 3;
-        User userServiceResponse = new User(userId, "Vessel", "vessel17", "vessel@gmail.com", "takemebacktoeden"/*, "profilephoto.com"*/);
+        int userId = 3;
+        String name = "Vessel";
+        String username = "vessel17";
+        String email = "vessel@gmail.com";
+        String password = "takemebacktoeden";
+        User userServiceResponse = new User(userId, name, username, email, password/*, "profilephoto.com"*/);
         Mockito.when(userService.getUserById(userId)).thenReturn(userServiceResponse);
 
         // Action
@@ -69,8 +73,12 @@ public class UserControllerTest {
     @Test
     public void test_userController_getUserByEmail_returnsUser() throws Exception {
         // Setup
+        int userId = 3;
+        String name = "Vessel";
+        String username = "vessel17";
         String email = "vessel@gmail.com";
-        User userServiceResponse = new User(3, "Vessel", email, "vessel@gmail.com", "takemebacktoeden", "profilephoto.com");
+        String password = "takemebacktoeden";
+        User userServiceResponse = new User(userId, name, username, email, password/*, "profilephoto.com"*/);
         Mockito.when(userService.getUserByEmail(email)).thenReturn(userServiceResponse);
 
         // Action

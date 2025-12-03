@@ -1,5 +1,6 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostHttpResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.PostService;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
 
@@ -10,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
@@ -21,7 +24,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/posts")
+    @GetMapping("/get/all")
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> allPosts = null;
         try {
@@ -34,8 +37,9 @@ public class PostController {
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 
-    @GetMapping("/posts/all-by-user")
-    public ResponseEntity<List<Post>> getAllPostsByUser(@RequestParam(name = "id") Integer userId) {
+    //TODO: should "get" be in mapping? if so, should it be at end?
+    @GetMapping("/get/userId={userId}")
+    public ResponseEntity<List<Post>> getAllPostsByUser(@PathVariable("userId") Integer userId) {
         List<Post> allPostsByUser = null;
         try {
             allPostsByUser = postService.getAllPostsByUser(userId);
@@ -47,22 +51,30 @@ public class PostController {
         return new ResponseEntity<>(allPostsByUser, HttpStatus.OK);
     }
 
-    @PostMapping("/posts/create")
-    public ResponseEntity<Post> createPost(@RequestBody Post newPost) {
+    //TODO: Is Post the correct RequestBody type?
+        //no
+    //how do post IDs get assigned?
+    //TODO: carry user identification to backend to authorize create operation
+    //TODO: Should Post entry hold User username so that when post is retrieved, user does not have to be retrieved to get username?
+    @PostMapping("/create")
+    public ResponseEntity<PostHttpResponse> createPost(@RequestBody PostHttpResponse newPost) {
         Post newlyCreatedPost = null;
         try {
             newlyCreatedPost = postService.createPost(newPost);
         } catch (Exception e) {
-            logger.error("Error creating post by user {} with image URL {} and location {}. Cause: {}",
-                         newPost.getUserId(), newPost.getImageUrl(), newPost.getLocationCoordinates(), e.getMessage());
+            logger.error("Error creating post by user {} with image {} and location {}. Cause: {}",
+                         newPost.getUserId(), newPost.getPostImage(), newPost.getLocationCoordinates(), e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         logger.info("Post with ID {} created", newlyCreatedPost.getPostId());
-        return new ResponseEntity<>(newlyCreatedPost, HttpStatus.CREATED);
+        return
+            new ResponseEntity<>(newlyCreatedPost, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/posts")
-    public ResponseEntity<String> deletePost(@RequestParam(name = "id") Integer postId) {
+    //TODO: carry user identification to backend to authorize delete operation
+    @DeleteMapping("/{postId}/delete")
+    public ResponseEntity<String> deletePost(@PathVariable("postId") Integer postId) {
         try {
             postService.deletePost(postId);
         } catch (Exception e) {
@@ -72,4 +84,44 @@ public class PostController {
         logger.info("Post with ID {} deleted", postId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    //TODO: almost-duplicate code; can this be extracted?
+    //TODO: is PostHttpResponse a DTO?
+	@GetMapping("/{postId}/get")
+	public ResponseEntity<PostHttpResponse> getPost(@PathVariable("postId") Integer postId) {
+        //get post entry from database
+        Post post = null;
+        try {
+            post = postService.getPost(postId);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.info("Error retrieving post with ID {}. Cause: Post not found", postId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.warn("Error retrieving post with ID {}. Cause: {}", postId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("Post with ID {} retrieved", postId);
+
+        //get post image from S3
+        byte[] postImage = null;
+        try {
+            postImage = postService.getPostImage(post.getUserId(), postId);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.info("Error retrieving post image with ID {}. Cause: Image not found", postId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.warn("Error retrieving post image with ID {}. Cause: {}", postId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("Post image with ID {} retrieved", postId);
+
+        return getPostHttpResponseEntity(post, postImage);
+	}
+
+    private ResponseEntity<PostHttpResponse> getPostHttpResponseEntity(Post post, byte[] postImage) {
+
+    }
+
 }
