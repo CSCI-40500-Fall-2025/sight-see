@@ -37,6 +37,7 @@ function CaptionForm(props) {
       setImageContext(truncated);
    };
 
+   // Read in image in base64 for Gemini
    const readImage = (imageFile) => {
       return new Promise((resolve, reject) => {
          const reader = new FileReader();
@@ -58,10 +59,15 @@ function CaptionForm(props) {
       });
    };
 
-   const handleGenerate = async () => {
-      try {
-         // Can refine prompt?
-         const prompt = JSON.stringify(`
+   // Get location information from Gemini based on current coords
+   const createLocationInformation = async () => {
+      console.log(props.location);
+   };
+
+   // Function to generate the caption for the image
+   const createCaption = async () => {
+      // Can refine prompt?
+      const prompt = JSON.stringify(`
          User Context: ${imageContext}
          Mood/Tone: ${generatedCaptionMood}
          Task:
@@ -74,53 +80,47 @@ function CaptionForm(props) {
          3. Output only the final caption. No explanations, no image descriptions, no metadata, and no extra text.
          `);
 
-         // Get image data as base64
-         const base64 = await readImage(props.imageFile);
+      // Get image data as base64
+      const base64 = await readImage(props.imageFile);
 
-         console.log("Image:", base64);
-
-         // Prepare body of request
-         const body = {
-            contents: {
-               role: "USER",
-               parts: [
-                  {
-                     inlineData: {
-                        data: base64,
-                        mimeType: props.imageFile.type,
-                     },
+      // Prepare body of request
+      const body = {
+         contents: {
+            role: "USER",
+            parts: [
+               {
+                  inlineData: {
+                     data: base64,
+                     mimeType: props.imageFile.type,
                   },
-                  {
-                     text: prompt,
-                  },
-               ],
-            },
-         };
+               },
+               {
+                  text: prompt,
+               },
+            ],
+         },
+      };
 
-         // Prepare something to indicated waiting time
-         setGenerating(true);
+      // Post the request for the caption
+      const response = await axios.post(
+         `https://aiplatform.googleapis.com/v1/publishers/google/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+         body
+      );
 
-         // Post
-         const response = await axios.post(
-            `https://aiplatform.googleapis.com/v1/publishers/google/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-            body
-         );
+      setGenerating(false);
+      setGeneratedCaption(true);
+      handleCaptionChange(response.data.candidates[0].content.parts[0].text);
+      setCaptionSelect("2"); // prevent user from generating another caption
+   };
 
-         setGenerating(false);
-         setGeneratedCaption(true);
-         handleCaptionChange(response.data.candidates[0].content.parts[0].text);
-         setCaptionSelect("2"); // prevent user from generating another caption
+   const handleGenerate = async () => {
+      // Prepare something to indicated waiting time
+      setGenerating(true);
 
-         console.log(caption);
-
-         {
-            //
-            /** TODO:
-             * refactor code so that control is back in the createpostpage component
-             * fill out handle submit
-             *
-             */
-         }
+      try {
+         // Get the location information from Gemini + Google Maps
+         // Create the caption
+         await createCaption();
       } catch (error) {
          setGenerating(false);
          console.log(error);
@@ -133,6 +133,7 @@ function CaptionForm(props) {
 
    return (
       <div className="flex flex-col">
+         {/*The menu where you pick what you want */}
          <select
             className="select"
             value={captionSelect}
@@ -150,6 +151,7 @@ function CaptionForm(props) {
             </option>
          </select>
 
+         {/** If the user chooses to write their own caption */}
          {captionSelect === "2" && (
             <>
                <label className="label">Add a caption!</label>
@@ -163,6 +165,7 @@ function CaptionForm(props) {
             </>
          )}
 
+         {/** If the user chooses to generate a caption, show this options menu so that user can guide the output */}
          {captionSelect === "3" && !generatedCaption && (
             <>
                <select
@@ -195,6 +198,7 @@ function CaptionForm(props) {
                   placeholder="Optional: Add some context about the image!"
                ></TextInput>
 
+               {/** The button for the user to generate a caption. Disable after they create ONE (1) caption so that our rate limits aren't used up by one person */}
                {!generatedCaption && !generating && (
                   <Button
                      func={() => {
@@ -204,17 +208,15 @@ function CaptionForm(props) {
                      className="btn-lg	"
                   ></Button>
                )}
-
-               {/** MODEL CHOSEN: gemini-2.5-flash-lite
-                * Send image + prompt to model
-                */}
             </>
          )}
 
+         {/** Spinning wheel to show during the wait for the generated caption */}
          {captionSelect === "3" && generating && (
             <span className="loading loading-spinner loading-xl"></span>
          )}
 
+         {/** After the caption is created, let them edit the caption */}
          {captionSelect === "3" && generatedCaption && (
             <>
                <label className="label">View your caption!</label>
@@ -232,7 +234,6 @@ function CaptionForm(props) {
             // The post button
             (captionSelect === "1" ||
                captionSelect === "2" ||
-               // change this below
                (captionSelect === "3" && generatedCaption)) && (
                <Button
                   func={() => {
@@ -248,4 +249,11 @@ function CaptionForm(props) {
 }
 export default CaptionForm;
 
-/** MESSY! Change it so that CreatePostPage controls state instead of whatever this is right now */
+/* TO DO:
+   Make request to gemini for location information (RAG)
+
+   Change prompt to incorporate the location information
+   
+   UNRELATED BUT ALSO: the empty caption could be rejected by backend? so remove if needed?
+   
+   */
