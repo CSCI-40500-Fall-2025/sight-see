@@ -1,32 +1,24 @@
 <configuration>
+
+    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+        <url>${SPLUNK_HEC_URL}</url>
+        <token>${SPLUNK_HEC_TOKEN}</token>
+        <batch_size_count>1</batch_size_count>  <!-- send events immediately -->
+        <batch_interval>0</batch_interval>
+        <max_events_batch>1</max_events_batch>
+        <send_mode>sequential</send_mode>
+    </appender>
+
+    <!-- Console for local debugging -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <root level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="SPLUNK"/>
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="SPLUNK" />
     </root>
 
-    <logger name="org.hibernate" level="ERROR" additivity="true">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="SPLUNK"/>
-    </logger>
-
-    <logger name="org.springframework" level="ERROR" additivity="true">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="SPLUNK"/>
-    </logger>
-
-    <logger name="org.springframework.jdbc" level="ERROR" additivity="true">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="SPLUNK"/>
-    </logger>
-
-    <logger name="io.github.CSCI_40500_Fall_2025.sightsee" level="DEBUG" additivity="true">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="SPLUNK"/>
-    </logger>
 </configuration>
