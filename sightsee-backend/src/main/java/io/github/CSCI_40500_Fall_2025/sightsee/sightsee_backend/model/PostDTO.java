@@ -2,17 +2,18 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
 import java.util.Date;
 
-public class PostHttpResponse {
+public class PostDTO {
 
     private Integer postId;
     private Integer userId;
-    //private String username; //String name?? was added to User model at some point
     private byte[] postImage;
     private String caption;
     private Date timestamp;
     private String locationCoordinates;
 
-    public PostHttpResponse(Integer postId, Integer userId, byte[] postImage, String caption, Date timestamp, String locationCoordinates) {
+    public PostDTO() {}
+
+    public PostDTO(Integer postId, Integer userId, byte[] postImage, String caption, Date timestamp, String locationCoordinates) {
         this.postId = postId;
         this.userId = userId;
         this.postImage = postImage;

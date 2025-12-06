@@ -1,6 +1,6 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
-public class UserHttpResponse {
+public class UserDTO {
 
     private Integer userId;
     private String name;
@@ -8,11 +8,9 @@ public class UserHttpResponse {
     private String email;
     private byte[] profilePhoto;
 
-    public UserHttpResponse() {
+    public UserDTO() {}
 
-    }
-
-    public UserHttpResponse(Integer userId, String name, String username, String email, byte[] profilePhoto) {
+    public UserDTO(Integer userId, String name, String username, String email, byte[] profilePhoto) {
         this.userId = userId;
         this.name = name;
         this.username = username;

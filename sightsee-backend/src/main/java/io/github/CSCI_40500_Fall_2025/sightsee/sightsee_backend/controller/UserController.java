@@ -1,8 +1,8 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserHttpResponse;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,24 +14,58 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-//TODO: change "info" logs to "warn" logs (if applicable) after logging assignment grading
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @GetMapping("/id={userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable("userId") Integer userId) {
+        UserDTO user;
+        try {
+            user = userService.getUserById(userId);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving user with ID {}. Cause: UserDTO not found", userId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.error("Error retrieving user with ID {}. Cause: {}", userId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("User with ID {} retrieved", userId);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/email={email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+        UserDTO user;
+        try {
+            user = userService.getUserByEmail(email);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving user with email {}. Cause: User not found", email);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.error("Error retrieving user with email {}. Cause: {}", email, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("User with email {} retrieved", email);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
     //TODO: remove; not relevant
-    @GetMapping("/get/all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         //TODO: Populate production database with a dummy user to prevent error on first launch?
-        List<User> allUsers = null;
+        List<UserDTO> allUsers;
         try {
             allUsers = userService.getAllUsers();
         } catch (Exception e) {
@@ -39,45 +73,19 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         logger.debug("All users retrieved. Number of users: {}", allUsers.size());
+
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    @GetMapping("/get/id={userId}")
-    public ResponseEntity<UserHttpResponse> getUserById(@PathVariable("userId") Integer userId) {
-        User user = null;
-        try {
-            user = userService.getUserById(userId);
-        } catch (Exception e) {
-            if (e instanceof NoSuchElementException) {
-                logger.info("Error retrieving user with ID {}. Cause: User not found", userId);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            logger.warn("Error retrieving user with ID {}. Cause: {}", userId, e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        logger.debug("User with ID {} retrieved", userId);
-        return getUserHttpResponseResponseEntity(user, getProfilePhoto(userId));
+    //TODO: implement
+    @PostMapping("")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO incomingUser) {
+        return null;
     }
 
-    @GetMapping("/get/email={email}")
-    public ResponseEntity<UserHttpResponse> getUserByEmail(@PathVariable("email") String email) {
-        User user = null;
-        try {
-            user = userService.getUserByEmail(email);
-        } catch (Exception e) {
-            if (e instanceof NoSuchElementException) {
-                logger.info("Error retrieving user with email {}. Cause: User not found", email);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            logger.warn("Error retrieving user with email {}. Cause: {}", email, e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        logger.debug("User with email {} retrieved", email);
-        return getUserHttpResponseResponseEntity(user, getProfilePhoto(user.getUserId()));
-    }
-
-    @DeleteMapping("/{userId}/delete")
-    public ResponseEntity<String> deleteUser(@RequestParam(name = "id") Integer userId) {
+    //TODO: carry user identification to backend to authorize delete operation
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable("userId") Integer userId) {
         try {
             userService.deleteUser(userId);
         } catch (Exception e) {
@@ -92,49 +100,31 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private ResponseEntity<UserHttpResponse> getUserHttpResponseResponseEntity(User user, byte[] profilePhoto) {
-        UserHttpResponse response = new UserHttpResponse();
-        if (user.getUserId() != null) {
-            response.setUserId(user.getUserId());
-        } else {
-            logger.warn("User retrieved but user ID is null");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (user.getName() != null) {
-            response.setName(user.getName());
-        }
-        if (user.getUsername() != null) {
-            response.setUsername(user.getUsername());
-        }
-        if (user.getEmail() != null) {
-            response.setEmail(user.getEmail());
-        }
-        response.setProfilePhoto(profilePhoto);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping(path = "/{userId}/profile-photo/upload",
+    @PostMapping(path = "/{userId}/profile-photo",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void uploadProfilePhoto(@PathVariable("userId") Integer userId,
+    public ResponseEntity<String> uploadProfilePhoto(@PathVariable("userId") Integer userId,
                                    @RequestParam("file") MultipartFile file) {
         try {
-            userService.uploadProfilePhoto(userId, file);
+            userService.uploadProfilePhoto(userId, file.getBytes());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.warn("Error uploading profile photo for user with ID {}. Cause: {}", userId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        logger.info("Profile photo for user with ID {} uploaded", userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //TODO: keep or remove?
 	//TODO: add try/catch in S3Service? What would S3Client do if failed?
         //TODO: check UserController, UserService, PostController, PostService
-    @GetMapping("/{userId}/profile-photo/get")
+    @GetMapping("/{userId}/profile-photo")
     public byte[] getProfilePhoto(@PathVariable("userId") Integer userId) {
-        byte[] profilePhoto = null;
+        byte[] profilePhoto;
         try {
             profilePhoto = userService.getProfilePhoto(userId);
         } catch (Exception e) {
             if (e instanceof NoSuchElementException) {
-                logger.info("Error retrieving profile photo for user with ID {}. Cause: User not found", userId);
+                logger.warn("Error retrieving profile photo for user with ID {}. Cause: User not found", userId);
                 return new byte[]{};
             }
             logger.warn("Error retrieving profile photo for user with ID {}. Cause: {}", userId, e.getMessage());

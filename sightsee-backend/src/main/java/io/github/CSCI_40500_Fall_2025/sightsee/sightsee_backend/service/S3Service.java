@@ -5,7 +5,6 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-import java.io.IOException;
 
 @Service
 public class S3Service {
@@ -24,7 +23,7 @@ public class S3Service {
         s3Client.putObject(putRequest, RequestBody.fromBytes(image));
     }
 
-    public byte[] getObject(String bucketName, String imageKey) {
+    public byte[] getObject(String bucketName, String imageKey) throws Exception {
         throwIfKeyNotFound(bucketName, imageKey);
 
         GetObjectRequest getRequest = GetObjectRequest.builder()
@@ -32,25 +31,19 @@ public class S3Service {
                                                       .key(imageKey)
                                                       .build();
         ResponseInputStream<GetObjectResponse> getResponse = s3Client.getObject(getRequest);
-        try {
-            return getResponse.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e); //TODO: narrow exception type
-        }
+
+        return getResponse.readAllBytes(); //may throw IOException
     }
 
     //TODO: removeObject()
 
-    private void throwIfKeyNotFound(String bucketName, String imageKey) {
+    private void throwIfKeyNotFound(String bucketName, String imageKey) throws NoSuchKeyException {
         HeadObjectRequest headRequest = HeadObjectRequest.builder()
                                                          .bucket(bucketName)
                                                          .key(imageKey)
                                                          .build();
-        try {
-            HeadObjectResponse headResponse = s3Client.headObject(headRequest);
-        } catch (NoSuchKeyException e) { //"Amazon S3 returns an HTTP status code 404 Not Found error" (AWS documentation)
-            throw new RuntimeException(e); //TODO: narrow exception type
-        }
+        HeadObjectResponse headResponse = s3Client.headObject(headRequest); //throws NoSuchKeyException;
+                // "Amazon S3 returns an HTTP status code 404 Not Found error" (AWS documentation)
     }
 
 }
