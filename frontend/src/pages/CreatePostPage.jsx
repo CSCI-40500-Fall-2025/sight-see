@@ -5,22 +5,12 @@ import {
    ImageDisplay,
    TextInput,
    Button,
+   CaptionForm,
 } from "../components";
 
 export default function CreatePostPage() {
-   const [imageFile, setImagePath] = useState(null);
-   const [caption, setCaption] = useState("");
-
-   const handleCaptionChange = (text) => {
-      // Remove new lines from input
-      const removedNewLines = text.replace(/[\r\n]+/g, "");
-
-      // Limit to 280 characters
-      const truncated = removedNewLines.slice(0, 280);
-
-      // Set the caption variable
-      setCaption(truncated);
-   };
+   const [imageFile, setImageFile] = useState(null);
+   const [showImageUploadError, setShowImageUploadError] = useState(false);
 
    // Function to get the current location of user
    const getLocation = async () => {
@@ -49,7 +39,7 @@ export default function CreatePostPage() {
     *    Must only contain letters, numbers, and punctuation or emojis?
     *    Check for SQl injection
     */
-   const validateCaptionInput = () => {
+   const validateCaptionInput = (caption) => {
       const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}]{0,280}$/u;
 
       // Case Sensitive: will not match 'select'
@@ -106,11 +96,12 @@ export default function CreatePostPage() {
       return true;
    };
 
-   const handleSubmit = async () => {
+   const handleSubmit = async (caption) => {
       const isValidCaption = validateCaptionInput(caption);
 
       if (!isValidCaption) {
          // Error handling TODO
+         console.log("bad caption");
          return;
       }
 
@@ -136,6 +127,15 @@ export default function CreatePostPage() {
       }
    };
 
+   const handleImageUploadSuccess = (file) => {
+      setShowImageUploadError(false);
+      setImageFile(file);
+   };
+
+   const handleImageUploadError = () => {
+      setShowImageUploadError(true);
+   };
+
    return (
       <div>
          <Navbar></Navbar>
@@ -154,60 +154,48 @@ export default function CreatePostPage() {
                <>
                   <label className="label">Pick an Image to Upload!</label>
                   <ImageUpload
-                     onImageUpload={(file) => setImagePath(file)}
+                     onImageUpload={(file) => handleImageUploadSuccess(file)}
+                     onError={handleImageUploadError}
                   ></ImageUpload>
                </>
             )}
 
-            {imageFile && (
-               <>
-                  <label className="label">Add a caption!</label>
-                  <TextInput
-                     value={caption}
-                     onChange={(e) => {
-                        handleCaptionChange(e.target.value);
-                     }}
-                     placeholder="Add a caption to your photo!"
-                  ></TextInput>
-               </>
+            {showImageUploadError && (
+               <div style={{ color: "red" }}>
+                  Unsupported Image type. Try again.
+               </div>
             )}
 
-            {imageFile && <Button func={handleSubmit} title="Post!"></Button>}
+            {
+               /** Remove this! After testing */
+               imageFile && (
+                  <div>
+                     {imageFile.name} <br></br> {imageFile.type}
+                  </div>
+               )
+            }
+
+            {imageFile && (
+               <CaptionForm
+                  onSubmit={handleSubmit}
+                  imageFile={imageFile}
+               ></CaptionForm>
+            )}
          </fieldset>
       </div>
    );
 }
 
 {
-   /** Flow:
-    *       On create button click from main page: under profile dropdown
-    *       Nav to new page
-    *       Here, you can upload an image (temp, will change to taking a picture soon!)   : ImageUpload component
-    *       Once the picture is uploaded, display it and bring up a caption input box     : ImageDisplay and TextInput components
-    *       Here the user inputs a short comment
-    *          Validate: maybe short captions only                                        : handlecaptionChange
-    *       Once the comment is good:                                                     : NOT present
-    *             Present a button that will signal to user to create post
+   /** ML Component Flow:
+    *    If a user uploads a heic image, make them choose again
     *
-    *       Once the button is pressed                                                    : handleSubmit
-    *
-    *          Further validate comment input text                                        : validateCaptionInput
-    *          Get the image data                                                         : NOT present
-    *          Try to get the location of user first                                      : getLocation
-    *             if fail, then stop and bring up error
-    *          Package everything and post to backend
-    *
-    *          Wait for response
-    *             If good, do something TODO
-    *                Suggestions: navigate back to main page with some sort of refresh happening to the map?
-    *             If bad, post error
-    *
-    *
-    *    Potential Issues:
-    *       IPhone image format is NOT supported on all major browsers (only Safari (and maybe IOS browsers using WebKit (so all of them)))
-    *          So, any images in this format must be changed!
-    *
-    *          Ignore for now, since this will most likely depends on how taking a picture will be implemented
-    *          Just use pictures in png format for current testing
+    *    Once image is display, give user three options for captioning:
+    *       No caption wanted
+    *       User enters their own caption
+    *       User can generate a caption
+    *          If user decides to generate a caption:
+    *             Ask them for a mood.
+    *             Ask them to provide some details about what the picture means to them: maybe ask them what memory comes up in this image, or something
     */
 }
