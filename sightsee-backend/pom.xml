@@ -115,11 +115,4 @@
             </plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>splunk-repo</id>
-			<url>https://devrepo.splunk.com/artifactory/repo/</url>
-		</repository>
-	</repositories>
 </project>
