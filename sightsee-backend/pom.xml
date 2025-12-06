@@ -82,6 +82,20 @@
                         -Xshare:off
                     </argLine>
                 </configuration>
+				<configuration>
+					<appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+						<url>${SPLUNK_HEC_URL}</url>
+						<token>${SPLUNK_HEC_TOKEN}</token>
+						<host>${HOSTNAME}</host>
+						<source>spring-app</source>
+						<sourcetype>_json</sourcetype>
+						<index>main</index>
+						<batch_size_count>1</batch_size_count>
+					</appender>
+					<root level="DEBUG">
+						<appender-ref ref="SPLUNK" />
+					</root>
+				</configuration>
             </plugin>
 		</plugins>
 	</build>
