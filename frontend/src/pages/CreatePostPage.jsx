@@ -59,7 +59,7 @@ export default function CreatePostPage() {
     *    Check for SQl injection
     */
    const validateCaptionInput = (caption) => {
-      const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}]{0,280}$/u;
+      const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}\uFE0F]{0,280}$/u;
 
       // Case Sensitive: will not match 'select'
       const bannedWordsRegex =
@@ -67,8 +67,6 @@ export default function CreatePostPage() {
 
       // SQL special characters
       /** Looks for:
-       *  '
-       *  "
        *  ;
        *  \
        *  -
@@ -80,14 +78,14 @@ export default function CreatePostPage() {
        *  <
        *  >
        */
-      const bannedCharacters = /['";\\\-*\/()=<>]/;
+      const bannedCharacters = /[;\\\-*\/()=<>]/;
 
       // Check that has only allowed characters and is within allowed length
       const containsAllowedCharacters = characterRegex.test(caption);
 
       if (!containsAllowedCharacters) {
          // Error handle TODO
-         console.log("no good");
+         console.log("no good: allowed characters");
          return false;
       }
 
@@ -96,7 +94,7 @@ export default function CreatePostPage() {
 
       if (containsBannedWords) {
          // Error handle TODO
-         console.log("no good");
+         console.log("no good: banned words");
 
          return false;
       }
@@ -106,7 +104,7 @@ export default function CreatePostPage() {
 
       if (containsBannedCharacters) {
          // Error handle TODO
-         console.log("no good");
+         console.log("no good 3: banned characters");
 
          return false;
       }
@@ -122,7 +120,7 @@ export default function CreatePostPage() {
          return;
       }
 
-      // Validate the caption again for some reason
+      // Validate the caption
       // TODO: If the user chose no caption, do something here
       // Remove the option if needed
       const isValidCaption = validateCaptionInput(caption);

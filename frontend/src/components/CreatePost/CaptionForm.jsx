@@ -61,23 +61,121 @@ function CaptionForm(props) {
 
    // Get location information from Gemini based on current coords
    const createLocationInformation = async () => {
-      console.log(props.location);
+      // If there is no location throw Error
+      if (!props.location) {
+         throw new Error("NO LOCATION DATA");
+      }
+
+      const prompt = JSON.stringify(
+         `You are an expert local guide with access to Google Maps data.
+         Your task is to provide accurate, up-to-date, and detailed information about the area near the following coordinates:
+
+         Latitude: ${props.location.latitude}
+         Longitude: ${props.location.longitude}
+
+         User Context:
+         ${imageContext || "None provided"}
+         (The user context should guide which types of places or details you emphasize, without adding non-factual information.)
+
+         Instructions:
+         1. Identify 10 to 20 notable places, landmarks, and neighborhoods nearby.
+         2. Use the **User Context** to determine:
+            - Which places are likely most relevant or useful to the user.
+            - Which attributes or details to emphasize (e.g., vibe, scenery, food type, cultural features, family-friendly, nightlife, etc.).
+            - How to order or highlight the most context-relevant locations first.
+         3. For each place, provide:
+            - Name  
+            - Type (restaurant, park, museum, café, street, neighborhood, etc.)  
+            - Key features, attractions, or activities  
+            - Distinctive vibe or atmosphere  
+            - Any factual historical, cultural, or aesthetic details  
+         4. Include additional contextual information about the surrounding area such as nearby streets, plazas, parks, or public spaces.
+         5. Structure the output as a **clear, organized list of bullet points**, one per place.
+         6. Make each bullet **rich in descriptive detail**, like a high-quality guide snippet.
+         7. All information must remain factual and observable. Do not invent places, opinions, captions, or commentary.
+         8. Avoid URLs, links, maps widgets, or metadata.
+
+         Output Example:
+         - Place Name 1: Type — Description of key features, activities, vibe, and any unique details.
+         - Place Name 2: Type — Description of key features, activities, vibe, and any unique details.
+         - Place Name 3: Type — Description of key features, activities, vibe, and any unique details.
+         `
+      );
+
+      // Create the body of the request
+      const body = {
+         contents: [
+            {
+               role: "user",
+               parts: [
+                  {
+                     text: prompt,
+                  },
+               ],
+            },
+         ],
+         tools: [{ googleMaps: {} }],
+         toolConfig: {
+            retrievalConfig: {
+               latLng: props.location,
+            },
+         },
+      };
+
+      try {
+         // Get the location context
+         const response = await axios.post(
+            `https://aiplatform.googleapis.com/v1/publishers/google/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+            body
+         );
+
+         return response.data.candidates[0].content.parts[0].text;
+      } catch (error) {
+         throw error;
+      }
    };
 
    // Function to generate the caption for the image
-   const createCaption = async () => {
+   const createCaption = async (geminiLocationInformation) => {
+      console.log("In create caption step: ", geminiLocationInformation);
       // Can refine prompt?
       const prompt = JSON.stringify(`
          User Context: ${imageContext}
          Mood/Tone: ${generatedCaptionMood}
+         Location Information (Factual Reference Only):
+         ${geminiLocationInformation}
+
          Task:
-         1. Analyze the provided image internally and understand what is shown.
-         2. Generate one social media caption (1–280 characters) following these rules:
-            a. If mood is provided, the caption must follow that mood.
-            b. If mood = None, generate the caption using only the image content + context.
-            c. If context = None, generate the caption using only the image content.
-            d. If both mood and context are missing, generate a natural caption based solely on the image content.
-         3. Output only the final caption. No explanations, no image descriptions, no metadata, and no extra text.
+         Create a single social media caption (1 to 280 characters) by combining:
+         - What you infer from the image (internally analyzed)
+         - Relevant details from the provided Location Information
+         - The User Context and Mood/Tone, when available
+
+         Caption Rules:
+         1. First, internally identify whether the image likely matches any place described in the Location Information.
+            - If it matches: subtly incorporate specific details about that place (landmarks, streets, atmosphere, or recognizable elements, and the name of the location).
+            - If it does not match: use general location context that still fits the surroundings.
+
+         2. Use the Mood/Tone ONLY if provided:
+            - If mood exists → the caption must follow that mood.
+            - If no mood → ignore mood entirely.
+
+         3. Use the User Context ONLY if provided:
+            - If context exists → use it to shape the angle, focus, or emotional framing of the caption.
+            - If no context → rely only on image + location info.
+
+         4. Fallback rules:
+            - If both mood and context are missing → generate a natural, concise caption based solely on image + location info.
+
+         5. Output Requirements:
+            - Output **one** caption only.
+            - No explanations, no reasoning steps, no descriptions of the image, and no metadata.
+            - Do not include hashtags.
+            - Keep the tone natural, human, and suitable for social media.
+
+         Remember:
+         The primary goal is to create a strong, context-aware social media caption.
+         The mood/tone and user context guide the style and emphasis when they exist, but factual accuracy must come from the location information.
          `);
 
       // Get image data as base64
@@ -107,10 +205,9 @@ function CaptionForm(props) {
          body
       );
 
-      setGenerating(false);
-      setGeneratedCaption(true);
+      setGenerating(false); // Disable the waiting icon
+      setGeneratedCaption(true); // Mark the fact that a caption has been generated
       handleCaptionChange(response.data.candidates[0].content.parts[0].text);
-      setCaptionSelect("2"); // prevent user from generating another caption
    };
 
    const handleGenerate = async () => {
@@ -119,8 +216,10 @@ function CaptionForm(props) {
 
       try {
          // Get the location information from Gemini + Google Maps
+         const locationInfo = await createLocationInformation();
+
          // Create the caption
-         await createCaption();
+         await createCaption(locationInfo);
       } catch (error) {
          setGenerating(false);
          console.log(error);
@@ -146,9 +245,7 @@ function CaptionForm(props) {
             </option>
             <option value="1">No caption</option>
             <option value="2">Write your own caption</option>
-            <option value="3" disabled={generatedCaption}>
-               Generate a caption
-            </option>
+            <option value="3">Generate a caption</option>
          </select>
 
          {/** If the user chooses to write their own caption */}
@@ -166,7 +263,7 @@ function CaptionForm(props) {
          )}
 
          {/** If the user chooses to generate a caption, show this options menu so that user can guide the output */}
-         {captionSelect === "3" && !generatedCaption && (
+         {captionSelect === "3" && (
             <>
                <select
                   className="select"
@@ -199,7 +296,7 @@ function CaptionForm(props) {
                ></TextInput>
 
                {/** The button for the user to generate a caption. Disable after they create ONE (1) caption so that our rate limits aren't used up by one person */}
-               {!generatedCaption && !generating && (
+               {!generating && (
                   <Button
                      func={() => {
                         handleGenerate();
@@ -234,7 +331,7 @@ function CaptionForm(props) {
             // The post button
             (captionSelect === "1" ||
                captionSelect === "2" ||
-               (captionSelect === "3" && generatedCaption)) && (
+               (captionSelect === "3" && generatedCaption && !generating)) && (
                <Button
                   func={() => {
                      handleSubmit();
