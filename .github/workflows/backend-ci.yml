@@ -18,8 +18,8 @@ jobs:
     env:
       AWS_REGION: us-east-1
       AWS_RDS_USERNAME: ${{ secrets.AWS_RDS_USERNAME }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
 
     steps:
     - name: Checkout repo
