@@ -2,8 +2,8 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.utility;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserHttpResponse;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,28 +11,29 @@ import java.util.List;
 @Component
 public class JsonConverter {
 
-    public JsonConverter() {
+    public JsonConverter() {}
 
-    }
-
-    public List<Post> convertJsonToPostList(String jsonString) throws Exception {
+    public PostDTO convertJsonToPostDto(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Post> posts = objectMapper.readValue(jsonString, new TypeReference<List<Post>>() {});
-        return posts;
+        return objectMapper.readValue(jsonString, new TypeReference<>() {
+        });
     }
 
-    public String convertPostToJSON(Post post) throws Exception {
+    public List<PostDTO> convertJsonToPostDtoList(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(post);
+        return objectMapper.readValue(jsonString, new TypeReference<>() {
+        });
     }
 
-    public Post convertJsonToPost(String jsonString) throws Exception {
+    public String convertPostDtoToJson(PostDTO postDto) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonString, new TypeReference<Post>() {});
+        return objectMapper.writeValueAsString(postDto);
     }
 
-    public UserHttpResponse convertJsonToUserHttpResponseObject(String jsonString) throws Exception {
+    public UserDTO convertJsonToUserDto(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonString, new TypeReference<UserHttpResponse>() {});
+        return objectMapper.readValue(jsonString, new TypeReference<>() {
+        });
     }
+
 }

@@ -1,24 +1,21 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
-public class UserHttpResponse {
+public class UserDTO {
 
     private Integer userId;
     private String name;
     private String username;
     private String email;
-    private String profilePhotoUrl;
+    private byte[] profilePhoto;
 
+    public UserDTO() {}
 
-    public UserHttpResponse() {
-
-    }
-
-    public UserHttpResponse(Integer userId, String name, String username, String email, String profilePhotoUrl) {
+    public UserDTO(Integer userId, String name, String username, String email, byte[] profilePhoto) {
         this.userId = userId;
         this.name = name;
         this.username = username;
         this.email = email;
-        this.profilePhotoUrl = profilePhotoUrl;
+        this.profilePhoto = profilePhoto;
     }
 
     public Integer getUserId() {
@@ -53,11 +50,12 @@ public class UserHttpResponse {
         this.email = email;
     }
 
-    public String getProfilePhotoUrl() {
-        return profilePhotoUrl;
+    public byte[] getProfilePhoto() {
+        return profilePhoto;
     }
 
-    public void setProfilePhotoUrl(String profilePhotoUrl) {
-        this.profilePhotoUrl = profilePhotoUrl;
+    public void setProfilePhoto(byte[] profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
+
 }

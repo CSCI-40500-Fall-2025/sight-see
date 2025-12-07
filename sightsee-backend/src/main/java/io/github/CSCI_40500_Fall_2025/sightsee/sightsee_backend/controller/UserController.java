@@ -1,34 +1,71 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserHttpResponse;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.UserService;
-import org.apache.coyote.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("/id={userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable("userId") Integer userId) {
+        UserDTO user;
+        try {
+            user = userService.getUserById(userId);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving user with ID {}. Cause: UserDTO not found", userId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.error("Error retrieving user with ID {}. Cause: {}", userId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("User with ID {} retrieved", userId);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/email={email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
+        UserDTO user;
+        try {
+            user = userService.getUserByEmail(email);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving user with email {}. Cause: User not found", email);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.error("Error retrieving user with email {}. Cause: {}", email, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.debug("User with email {} retrieved", email);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    //TODO: remove; not relevant
+    @GetMapping("")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         //TODO: Populate production database with a dummy user to prevent error on first launch?
-        List<User> allUsers = null;
+        List<UserDTO> allUsers;
         try {
             allUsers = userService.getAllUsers();
         } catch (Exception e) {
@@ -36,45 +73,19 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         logger.debug("All users retrieved. Number of users: {}", allUsers.size());
+
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    @GetMapping("/users/by-id")
-    public ResponseEntity<UserHttpResponse> getUserById(@RequestParam(name = "id") Integer userId) {
-        User user = null;
-        try {
-            user = userService.getUserById(userId);
-        } catch (Exception e) {
-            if (e instanceof NoSuchElementException) {
-                logger.info("Error retrieving user with ID {}. Cause: User not found", userId);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            logger.warn("Error retrieving user with ID {}. Cause: {}", userId, e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        logger.debug("User with ID {} retrieved", userId);
-        return getUserHttpResponseResponseEntity(user);
+    //TODO: implement
+    @PostMapping("")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO incomingUser) {
+        return null;
     }
 
-    @GetMapping("/users/by-email")
-    public ResponseEntity<UserHttpResponse> getUserByEmail(@RequestParam(name = "email") String email) {
-        User user = null;
-        try {
-            user = userService.getUserByEmail(email);
-        } catch (Exception e) {
-            if (e instanceof NoSuchElementException) {
-                logger.info("Error retrieving user with email {}. Cause: User not found", email);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            logger.warn("Error retrieving user with email {}. Cause: {}", email, e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        logger.debug("User with email {} retrieved", email);
-        return getUserHttpResponseResponseEntity(user);
-    }
-
-    @DeleteMapping("/users")
-    public ResponseEntity<String> deleteUser(@RequestParam(name = "id") Integer userId) {
+    //TODO: carry user identification to backend to authorize delete operation
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable("userId") Integer userId) {
         try {
             userService.deleteUser(userId);
         } catch (Exception e) {
@@ -89,27 +100,38 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private ResponseEntity<UserHttpResponse> getUserHttpResponseResponseEntity(User user) {
-        UserHttpResponse response = new UserHttpResponse();
-        if (user.getUserId() != null) {
-            response.setUserId(user.getUserId());
-        } else {
-            logger.warn("User retrieved but user ID is null");
+    @PostMapping(path = "/{userId}/profile-photo",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadProfilePhoto(@PathVariable("userId") Integer userId,
+                                   @RequestParam("file") MultipartFile file) {
+        try {
+            userService.uploadProfilePhoto(userId, file.getBytes());
+        } catch (Exception e) {
+            logger.warn("Error uploading profile photo for user with ID {}. Cause: {}", userId, e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (user.getName() != null) {
-            response.setName(user.getName());
+        logger.info("Profile photo for user with ID {} uploaded", userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //TODO: keep or remove?
+	//TODO: add try/catch in S3Service? What would S3Client do if failed?
+        //TODO: check UserController, UserService, PostController, PostService
+    @GetMapping("/{userId}/profile-photo")
+    public byte[] getProfilePhoto(@PathVariable("userId") Integer userId) {
+        byte[] profilePhoto;
+        try {
+            profilePhoto = userService.getProfilePhoto(userId);
+        } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving profile photo for user with ID {}. Cause: User not found", userId);
+                return new byte[]{};
+            }
+            logger.warn("Error retrieving profile photo for user with ID {}. Cause: {}", userId, e.getMessage());
+            return new byte[]{};
         }
-        if (user.getUsername() != null) {
-            response.setUsername(user.getUsername());
-        }
-        if (user.getEmail() != null) {
-            response.setEmail(user.getEmail());
-        }
-        if (user.getProfilePhotoUrl() != null) {
-            response.setProfilePhotoUrl(user.getProfilePhotoUrl());
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        logger.debug("Profile photo for user with ID {} retrieved", userId);
+        return profilePhoto;
     }
 
 }

@@ -1,10 +1,12 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.PostRepository;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,45 +14,114 @@ import java.util.NoSuchElementException;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final S3Service s3Service;
 
-    public PostService(PostRepository postRepository) {
+    @Value("${aws.buckets.post-images}")
+    private String postImagesBucket;
+
+    public PostService(PostRepository postRepository, S3Service s3Service) {
         this.postRepository = postRepository;
+        this.s3Service = s3Service;
     }
 
-    public List<Post> getAllPosts() throws Exception {
-        try {
-            return postRepository.findAll();
-        } catch (Exception e) {
-            throw new Exception(e.getMessage(), e);
+    public PostDTO getPost(Integer postId) throws Exception {
+        Post post = postRepository.getPostByPostId(postId); //may throw
+        if (post == null) {
+            throw new NoSuchElementException();
         }
+
+        List<Post> postList = List.of(post);
+        return getPostDtos(postList).getFirst();
     }
 
-    public List<Post> getAllPostsByUser(Integer userId) throws Exception {
-        //Check if user exists?
-        try {
-            return postRepository.getAllPostsByUserId(userId);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage(), e);
+    public List<PostDTO> getAllPosts() throws Exception {
+        List<Post> posts = postRepository.findAll();    //may throw
+
+        return getPostDtos(posts);
+    }
+
+    //TODO: Check if user exists?
+    public List<PostDTO> getAllPostsByUser(Integer userId) throws Exception {
+        List<Post> posts = postRepository.getAllPostsByUserId(userId);      //may throw
+
+        return getPostDtos(posts);
+    }
+
+    private List<PostDTO> getPostDtos(List<Post> posts) throws Exception {
+        List<PostDTO> postDtos = new ArrayList<>();
+
+        for (Post post : posts) {
+            byte[] postImage = getPostImage(post.getUserId(), post.getPostId());    //may throw
+            postDtos.add(new PostDTO(post.getPostId(),
+                                     post.getUserId(),
+                                     postImage,
+                                     post.getCaption(),
+                                     post.getTimestamp(),
+                                     post.getLocationCoordinates()));
         }
+        return postDtos;
     }
 
-    public Post createPost(Post post) throws Exception {
+    //TODO: implement
+    public List<PostDTO> getAllNearbyPosts() {
+        return null;
+    }
+
+    public PostDTO createPost(PostDTO postDTO) throws Exception {
+        Post post = new Post(postDTO.getUserId(),
+                             postDTO.getCaption(),
+                             postDTO.getTimestamp(),
+                             postDTO.getLocationCoordinates());
         try {
-            return postRepository.save(post);
+            post = postRepository.save(post);
         } catch (Exception e) {
-            throw new Exception(e.getMessage(), e);
+            throw new Exception("Error creating post in database: " + e.getMessage(), e);
         }
+
+        //TODO: try/catch with uploadPostImage()?
+        //TODO: if fails, undo post creation in database?
+        uploadPostImage(post.getUserId(), post.getPostId(), postDTO.getPostImage());
+
+        return new PostDTO(post.getPostId(),
+                           post.getUserId(),
+                           postDTO.getPostImage(),
+                           post.getCaption(),
+                           post.getTimestamp(),
+                           post.getLocationCoordinates());
     }
 
-    public void deletePost(Integer postId) throws Exception {
+    public void deletePost(Integer postId) throws NoSuchElementException {
+        throwIfPostNotFound(postId);
+        postRepository.deleteById(postId);
+
+        //TODO: delete post image
+    }
+
+    private byte[] getPostImage(Integer userId, Integer postId) throws Exception {
+        throwIfPostNotFound(postId);
+        String imageKey = userId + "/" + postId;
+        return s3Service.getObject(postImagesBucket,    //may throw
+                                   imageKey);
+    }
+
+    //overwrites any preexisting object with matching key
+    private void uploadPostImage(Integer userId, Integer postId, byte[] image) throws NoSuchElementException {
+        throwIfPostNotFound(postId);
+        String imageKey = userId + "/" + postId;
+        s3Service.putObject(postImagesBucket,
+                            imageKey,
+                            image);
+    }
+
+    //TODO: implement
+    public void deletePostImage(Integer postId) throws Exception {
+        ;
+    }
+
+    private void throwIfPostNotFound(Integer postId) throws NoSuchElementException {
         if (!postRepository.existsById(postId)) {
-            throw new NoSuchElementException("User with ID " + postId + " not found");
-        }
-        try {
-            postRepository.deleteById(postId);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage(), e);
+            throw new NoSuchElementException();
         }
     }
+
 }

@@ -10,9 +10,8 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "serial")
-    private Integer postId;
+    private Integer postId = null;
     private Integer userId; // FK
-    private String imageUrl;
     private String caption;
     private Date timestamp;
     private String locationCoordinates; // might want to split this into latitude and longitude
@@ -20,10 +19,8 @@ public class Post {
     public Post() {
     }
 
-    public Post(Integer postId, Integer userId, String imageUrl, String caption, Date timestamp, String locationCoordinates) {
-        this.postId = postId;
+    public Post(Integer userId, String caption, Date timestamp, String locationCoordinates) {
         this.userId = userId;
-        this.imageUrl = imageUrl;
         this.caption = caption;
         this.timestamp = timestamp;
         this.locationCoordinates = locationCoordinates;
@@ -33,24 +30,8 @@ public class Post {
         return postId;
     }
 
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
     public Integer getUserId() {
         return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public String getCaption() {
@@ -65,16 +46,8 @@ public class Post {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getLocationCoordinates() {
         return locationCoordinates;
-    }
-
-    public void setLocationCoordinates(String locationCoordinates) {
-        this.locationCoordinates = locationCoordinates;
     }
 
 }
