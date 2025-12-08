@@ -62,6 +62,10 @@ public class PostController {
         try {
             allPostsByUser = postService.getAllPostsByUser(userId);
         } catch (Exception e) {
+            if (e instanceof NoSuchElementException) {
+                logger.warn("Error retrieving posts by user {}. Cause: User not found", userId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             logger.error("Error retrieving posts by user {}. Cause: {}", userId, e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

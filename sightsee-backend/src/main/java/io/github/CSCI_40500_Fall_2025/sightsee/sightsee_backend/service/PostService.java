@@ -78,9 +78,12 @@ public class PostService {
             throw new Exception("Error creating post in database: " + e.getMessage(), e);
         }
 
-        //TODO: try/catch with uploadPostImage()?
-        //TODO: if fails, undo post creation in database?
-        uploadPostImage(post.getUserId(), post.getPostId(), postDTO.getPostImage());
+        try {
+            uploadPostImage(post.getUserId(), post.getPostId(), postDTO.getPostImage());
+        } catch (Exception e) {
+            postRepository.deleteById(post.getPostId());
+            throw new Exception("Error storing post image: " + e.getMessage(), e);
+        }
 
         return new PostDTO(post.getPostId(),
                            post.getUserId(),
@@ -90,11 +93,21 @@ public class PostService {
                            post.getLocationCoordinates());
     }
 
-    public void deletePost(Integer postId) throws NoSuchElementException {
+    public void deletePost(Integer postId) throws Exception {
         throwIfPostNotFound(postId);
-        postRepository.deleteById(postId);
 
-        //TODO: delete post image
+        try {
+            postRepository.deleteById(postId);
+        } catch (Exception e) {
+            throw new Exception("Error deleting post in database: " + e.getMessage(), e);
+        }
+
+        try {
+            Integer userId = postRepository.getPostByPostId(postId).getUserId();
+            deletePostImage(userId, postId);
+        } catch (Exception e) {
+            throw new Exception("Error deleting post image: " + e.getMessage(), e);
+        }
     }
 
     private byte[] getPostImage(Integer userId, Integer postId) throws Exception {
@@ -105,17 +118,19 @@ public class PostService {
     }
 
     //overwrites any preexisting object with matching key
-    private void uploadPostImage(Integer userId, Integer postId, byte[] image) throws NoSuchElementException {
+    private void uploadPostImage(Integer userId, Integer postId, byte[] image) throws Exception {
         throwIfPostNotFound(postId);
         String imageKey = userId + "/" + postId;
-        s3Service.putObject(postImagesBucket,
+        s3Service.putObject(postImagesBucket,   //may throw
                             imageKey,
                             image);
     }
 
-    //TODO: implement
-    public void deletePostImage(Integer postId) throws Exception {
-        ;
+    private void deletePostImage(Integer userId, Integer postId) throws Exception {
+        throwIfPostNotFound(postId);
+        String imageKey = userId + "/" + postId;
+        s3Service.deleteObject(postImagesBucket,    //may throw
+                               imageKey);
     }
 
     private void throwIfPostNotFound(Integer postId) throws NoSuchElementException {
