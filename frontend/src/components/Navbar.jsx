@@ -111,7 +111,14 @@ export default function Navbar(props) {
                   <Link to="/settings">Settings</Link>
                </li>
                <li>
-                  <Link to="/">Logout</Link>
+                  <Link
+                     to="/"
+                     onClick={() => {
+                        localStorage.removeItem("userId");
+                     }}
+                  >
+                     Logout
+                  </Link>
                </li>
             </ul>
          </div>
