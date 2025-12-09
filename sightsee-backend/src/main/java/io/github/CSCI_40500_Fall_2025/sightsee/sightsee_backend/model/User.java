@@ -3,25 +3,26 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
     private Integer userId = null;
-    private String name;
+
     private String username;
-    private String email;
     private String password;
+    private String name;
+    private String email;
 
     public User() {
     }
 
-    public User(String name, String username, String email, String password) {
-        this.name = name;
+    public User(String username, String password, String name, String email) {
         this.username = username;
-        this.email = email;
         this.password = password;
+        this.name = name;
+        this.email = email;
     }
 
     public Integer getUserId() {

@@ -1,14 +1,18 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.PostService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,8 +28,8 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDTO> getPost(@PathVariable("postId") Integer postId) {
-        PostDTO post;
+    public ResponseEntity<PostResponse> getPost(@PathVariable("postId") Integer postId) {
+        PostResponse post;
         try {
             post = postService.getPost(postId);
         } catch (Exception e) {
@@ -42,9 +46,9 @@ public class PostController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<PostDTO>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         //TODO: Populate production database with a dummy post to prevent error on first launch?
-        List<PostDTO> allPosts;
+        List<PostResponse> allPosts;
         try {
             allPosts = postService.getAllPosts();
         } catch (Exception e) {
@@ -57,31 +61,43 @@ public class PostController {
     }
 
     @GetMapping("/userId={userId}")
-    public ResponseEntity<List<PostDTO>> getAllPostsByUser(@PathVariable("userId") Integer userId) {
-        List<PostDTO> allPostsByUser;
+    public ResponseEntity<List<PostResponse>> getAllPostsByUser(@PathVariable("userId") Integer userId) {
+        List<PostResponse> allPostsByUser;
         try {
             allPostsByUser = postService.getAllPostsByUser(userId);
         } catch (Exception e) {
             if (e instanceof NoSuchElementException) {
-                logger.warn("Error retrieving posts by user {}. Cause: User not found", userId);
+                logger.warn("Error retrieving posts by user with ID {}. Cause: User not found", userId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            logger.error("Error retrieving posts by user {}. Cause: {}", userId, e.getMessage());
+            logger.error("Error retrieving posts by user with ID {}. Cause: {}", userId, e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        logger.debug("Posts by user {} retrieved. Number of posts: {}", userId, allPostsByUser.size());
+        logger.debug("Posts by user with ID {} retrieved. Number of posts: {}", userId, allPostsByUser.size());
         return new ResponseEntity<>(allPostsByUser, HttpStatus.OK);
     }
 
     //TODO: carry user identification to backend to authorize create operation
-    @PostMapping("")
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO incomingPost) {
-        PostDTO createdPost;
+    @PostMapping(path = "",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostResponse> createPost(@RequestPart("postImage") MultipartFile postImage,
+                                                   @RequestPart("postRequest") PostCreationRequest postRequest) {
+        //convert image to byte array
+        byte[] imageBytes;
         try {
-            createdPost = postService.createPost(incomingPost);
+            imageBytes = postImage.getBytes();
+        } catch (IOException e) {
+            logger.error("Error creating post by user with ID {}. Cause: {}", postRequest.getUserId(), e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        //create post in database and image storage
+        PostResponse createdPost;
+        try {
+            createdPost = postService.createPost(imageBytes, postRequest);
         } catch (Exception e) {
-            logger.error("Error creating post by user {} with image {} and location {}. Cause: {}",
-                         incomingPost.getUserId(), incomingPost.getPostImage(), incomingPost.getLocationCoordinates(), e.getMessage());
+            logger.error("Error creating post by user with ID {}, image {}, and location {}. Cause: {}",
+                         postRequest.getUserId(), imageBytes, postRequest.getLocationCoordinates(), e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         logger.info("Post with ID {} created", createdPost.getPostId());

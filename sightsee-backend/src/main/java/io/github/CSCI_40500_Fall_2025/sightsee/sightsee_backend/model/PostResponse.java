@@ -2,21 +2,21 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model;
 
 import java.util.Date;
 
-public class PostDTO {
+public class PostResponse {
 
     private Integer postId;
-    private Integer userId;
     private byte[] postImage;
+    private Integer userId;
     private String caption;
     private Date timestamp;
     private String locationCoordinates;
 
-    public PostDTO() {}
+    public PostResponse() {}
 
-    public PostDTO(Integer postId, Integer userId, byte[] postImage, String caption, Date timestamp, String locationCoordinates) {
+    public PostResponse(Integer postId, byte[] postImage, Integer userId, String caption, Date timestamp, String locationCoordinates) {
         this.postId = postId;
-        this.userId = userId;
         this.postImage = postImage;
+        this.userId = userId;
         this.caption = caption;
         this.timestamp = timestamp;
         this.locationCoordinates = locationCoordinates;
@@ -30,20 +30,20 @@ public class PostDTO {
         this.postId = postId;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
     public byte[] getPostImage() {
         return postImage;
     }
 
     public void setPostImage(byte[] postImage) {
         this.postImage = postImage;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getCaption() {

@@ -1,9 +1,11 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.User;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,64 +16,89 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${aws.buckets.profile-photos}")
     private String profilePhotosBucket;
 
-    public UserService(UserRepository userRepository, S3Service s3Service) {
+    public UserService(UserRepository userRepository, S3Service s3Service, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.s3Service = s3Service;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDTO getUserById(Integer userId) throws Exception {
+    public UserResponse getUserById(Integer userId) throws Exception {
         User user = userRepository.getUserById(userId); //may throw
         if (user == null) {
             throw new NoSuchElementException();
         }
 
-        return getUserDto(user);
+        return getUserResponse(user);
     }
 
-    public UserDTO getUserByEmail(String email) throws Exception {
+    public UserResponse getUserByEmail(String email) throws Exception {
         User user = userRepository.getUserByEmail(email);   //may throw
         if (user == null) {
             throw new NoSuchElementException();
         }
 
-        return getUserDto(user);
+        return getUserResponse(user);
     }
 
-    //irrelevant
-    public List<UserDTO> getAllUsers() throws Exception {
+    //relevant?
+    public List<UserResponse> getAllUsers() throws Exception {
         List<User> users = userRepository.findAll();    //may throw
 
-        List<UserDTO> userDtos = new ArrayList<>();
+        List<UserResponse> userResponses = new ArrayList<>();
         for (User user : users) {
-            userDtos.add(getUserDto(user));
+            userResponses.add(getUserResponse(user));
         }
-        return userDtos;
+        return userResponses;
     }
 
-    private UserDTO getUserDto(User user) throws Exception {
+    private UserResponse getUserResponse(User user) throws Exception {
         byte[] profilePhoto = getProfilePhoto(user.getUserId());    //may throw
-        return new UserDTO(user.getUserId(),
-                           user.getName(),
-                           user.getUsername(),
-                           user.getEmail(),
-                           profilePhoto);
+        return new UserResponse(user.getUserId(),
+                                user.getName(),
+                                user.getUsername(),
+                                user.getEmail(),
+                                profilePhoto);
     }
 
-    //TODO: implement
-    public UserDTO createUser(UserDTO userDTO) throws Exception {
-        return null;
+    public UserResponse createUser(UserCreationRequest request) throws Exception {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email is already taken");
+        }
+
+        User user = new User(request.getUsername(),
+                             passwordEncoder.encode(request.getPassword()),
+                             request.getName(),
+                             request.getEmail());
+        userRepository.save(user);
+        uploadProfilePhoto(user.getUserId(), new byte[100]); //TODO: find more elegant solution
+
+        return getUserResponse(user);
     }
 
     public void deleteUser(Integer userId) throws Exception {
         throwIfUserNotFound(userId);
-        userRepository.deleteById(userId);      //may throw
+
+        try {
+            deleteProfilePhoto(userId);
+        } catch (Exception e) {
+            throw new Exception("Error deleting profile photo: " + e.getMessage(), e);
+        }
+
+        try {
+            userRepository.deleteById(userId);
+        } catch (Exception e) {
+            throw new Exception("Error deleting user in database: " + e.getMessage(), e);
+        }
 
         //TODO: delete all posts by user
-        //TODO: delete user profile photo
     }
 
     public byte[] getProfilePhoto(Integer userId) throws Exception {
@@ -84,14 +111,14 @@ public class UserService {
     public void uploadProfilePhoto(Integer userId, byte[] image) throws Exception {
         throwIfUserNotFound(userId);
         s3Service.putObject(profilePhotosBucket,
-                            String.valueOf(userId),
+                            userId.toString(),
                             image);
-        //since profile image ID is same as user ID, no need to store an image ID in database
     }
 
-    //TODO: implement
-    public void deleteProfilePhoto(Integer userId) throws Exception {
-        ;
+    private void deleteProfilePhoto(Integer userId) throws Exception {
+        throwIfUserNotFound(userId);
+        s3Service.deleteObject(profilePhotosBucket,
+                               userId.toString());
     }
 
     private void throwIfUserNotFound(Integer userId) throws NoSuchElementException {

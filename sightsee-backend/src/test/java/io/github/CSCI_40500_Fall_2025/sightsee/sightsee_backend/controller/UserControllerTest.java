@@ -1,6 +1,6 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.UserService;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.utility.JsonConverter;
 import org.junit.jupiter.api.Assertions;
@@ -44,8 +44,8 @@ public class UserControllerTest {
     public void test_userController_getUserById_returnsUser() throws Exception {
         // Setup
         int userId = 3;
-        UserDTO userServiceResponse = new UserDTO(userId, "Vessel", "vessel17", "vessel@gmail.com",
-                                                  "https://aws.amazon.com/s3/vessel".getBytes());
+        UserResponse userServiceResponse = new UserResponse(userId, "Vessel", "vessel17", "vessel@gmail.com",
+                                                            "https://aws.amazon.com/s3/vessel".getBytes());
         Mockito.when(userService.getUserById(userId)).thenReturn(userServiceResponse);
 
         // Action
@@ -56,7 +56,7 @@ public class UserControllerTest {
             response.andExpect(status().isOk());
             // Assert: response userId == queried userId
             String responseContentAsJson = response.andReturn().getResponse().getContentAsString();
-            UserDTO responseContentAsObject = jsonConverter.convertJsonToUserDto(responseContentAsJson);
+            UserResponse responseContentAsObject = jsonConverter.convertJsonToUserDto(responseContentAsJson);
             Assertions.assertEquals(userId, responseContentAsObject.getUserId());
         } catch (Exception e) {
             logger.error("Test to get user by ID failed");
@@ -69,8 +69,8 @@ public class UserControllerTest {
     public void test_userController_getUserByEmail_returnsUser() throws Exception {
         // Setup
         String email = "vessel@gmail.com";
-        UserDTO userServiceResponse = new UserDTO(3, "Vessel", "vessel17", email,
-                                                  "https://aws.amazon.com/s3/vessel".getBytes());
+        UserResponse userServiceResponse = new UserResponse(3, "Vessel", "vessel17", email,
+                                                            "https://aws.amazon.com/s3/vessel".getBytes());
         Mockito.when(userService.getUserByEmail(email)).thenReturn(userServiceResponse);
 
         // Action
@@ -81,7 +81,7 @@ public class UserControllerTest {
             response.andExpect(status().isOk());
             // Assert: response email == queried email
             String responseContentAsJson = response.andReturn().getResponse().getContentAsString();
-            UserDTO responseContentAsObject = jsonConverter.convertJsonToUserDto(responseContentAsJson);
+            UserResponse responseContentAsObject = jsonConverter.convertJsonToUserDto(responseContentAsJson);
             Assertions.assertEquals(email, responseContentAsObject.getEmail());
         } catch (Exception e) {
             logger.error("Test to get user by email failed");

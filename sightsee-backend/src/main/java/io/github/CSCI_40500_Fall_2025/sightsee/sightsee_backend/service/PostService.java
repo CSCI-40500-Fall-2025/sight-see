@@ -1,6 +1,7 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.repository.PostRepository;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.Post;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,54 +25,54 @@ public class PostService {
         this.s3Service = s3Service;
     }
 
-    public PostDTO getPost(Integer postId) throws Exception {
+    public PostResponse getPost(Integer postId) throws Exception {
         Post post = postRepository.getPostByPostId(postId); //may throw
         if (post == null) {
             throw new NoSuchElementException();
         }
 
         List<Post> postList = List.of(post);
-        return getPostDtos(postList).getFirst();
+        return getPostResponses(postList).getFirst();
     }
 
-    public List<PostDTO> getAllPosts() throws Exception {
+    public List<PostResponse> getAllPosts() throws Exception {
         List<Post> posts = postRepository.findAll();    //may throw
 
-        return getPostDtos(posts);
+        return getPostResponses(posts);
     }
 
     //TODO: Check if user exists?
-    public List<PostDTO> getAllPostsByUser(Integer userId) throws Exception {
+    public List<PostResponse> getAllPostsByUser(Integer userId) throws Exception {
         List<Post> posts = postRepository.getAllPostsByUserId(userId);      //may throw
 
-        return getPostDtos(posts);
+        return getPostResponses(posts);
     }
 
-    private List<PostDTO> getPostDtos(List<Post> posts) throws Exception {
-        List<PostDTO> postDtos = new ArrayList<>();
+    private List<PostResponse> getPostResponses(List<Post> posts) throws Exception {
+        List<PostResponse> postResponses = new ArrayList<>();
 
         for (Post post : posts) {
             byte[] postImage = getPostImage(post.getUserId(), post.getPostId());    //may throw
-            postDtos.add(new PostDTO(post.getPostId(),
-                                     post.getUserId(),
-                                     postImage,
-                                     post.getCaption(),
-                                     post.getTimestamp(),
-                                     post.getLocationCoordinates()));
+            postResponses.add(new PostResponse(post.getPostId(),
+                                               postImage,
+                                               post.getUserId(),
+                                               post.getCaption(),
+                                               post.getTimestamp(),
+                                               post.getLocationCoordinates()));
         }
-        return postDtos;
+        return postResponses;
     }
 
     //TODO: implement
-    public List<PostDTO> getAllNearbyPosts() {
+    public List<PostResponse> getAllNearbyPosts() {
         return null;
     }
 
-    public PostDTO createPost(PostDTO postDTO) throws Exception {
-        Post post = new Post(postDTO.getUserId(),
-                             postDTO.getCaption(),
-                             postDTO.getTimestamp(),
-                             postDTO.getLocationCoordinates());
+    public PostResponse createPost(byte[] image, PostCreationRequest request) throws Exception {
+        Post post = new Post(request.getUserId(),
+                             request.getCaption(),
+                             request.getTimestamp(),
+                             request.getLocationCoordinates());
         try {
             post = postRepository.save(post);
         } catch (Exception e) {
@@ -79,34 +80,34 @@ public class PostService {
         }
 
         try {
-            uploadPostImage(post.getUserId(), post.getPostId(), postDTO.getPostImage());
+            uploadPostImage(post.getUserId(), post.getPostId(), image);
         } catch (Exception e) {
             postRepository.deleteById(post.getPostId());
             throw new Exception("Error storing post image: " + e.getMessage(), e);
         }
 
-        return new PostDTO(post.getPostId(),
-                           post.getUserId(),
-                           postDTO.getPostImage(),
-                           post.getCaption(),
-                           post.getTimestamp(),
-                           post.getLocationCoordinates());
+        return new PostResponse(post.getPostId(),
+                                image,
+                                post.getUserId(),
+                                post.getCaption(),
+                                post.getTimestamp(),
+                                post.getLocationCoordinates());
     }
 
     public void deletePost(Integer postId) throws Exception {
         throwIfPostNotFound(postId);
 
         try {
-            postRepository.deleteById(postId);
-        } catch (Exception e) {
-            throw new Exception("Error deleting post in database: " + e.getMessage(), e);
-        }
-
-        try {
             Integer userId = postRepository.getPostByPostId(postId).getUserId();
             deletePostImage(userId, postId);
         } catch (Exception e) {
             throw new Exception("Error deleting post image: " + e.getMessage(), e);
+        }
+
+        try {
+            postRepository.deleteById(postId);
+        } catch (Exception e) {
+            throw new Exception("Error deleting post in database: " + e.getMessage(), e);
         }
     }
 

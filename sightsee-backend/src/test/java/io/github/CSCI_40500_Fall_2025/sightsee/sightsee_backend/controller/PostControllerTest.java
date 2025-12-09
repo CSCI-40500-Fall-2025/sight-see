@@ -1,6 +1,7 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.utility.JsonConverter;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.PostService;
 import org.junit.jupiter.api.Assertions;
@@ -13,20 +14,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = PostController.class)
@@ -47,14 +46,19 @@ public class PostControllerTest {
     @Test
     public void test_postController_getAllPosts_returnsAllPosts() throws Exception {
         // Setup
-        List<PostDTO> postServiceResponse = List.of(
-                new PostDTO(1, 1, "https://aws.amazon.com/s3/noahpost".getBytes(), "noahs post", new Date(), "394820485485030,384003985830"),
-                new PostDTO(2, 1, "https://aws.amazon.com/s3/noahsecondpost".getBytes(), "noahs second post", new Date(), "394820755485030,384075985830"),
-                new PostDTO(3, 4, "https://aws.amazon.com/s3/lanaspost".getBytes(), "lanas post", new Date(), "5345334232,78695875958"),
-                new PostDTO(4, 4, "https://aws.amazon.com/s3/lanassecondpost".getBytes(), "lanas second post", new Date(), "574857498394,79287593984"),
-                new PostDTO(5, 3, "https://aws.amazon.com/s3/vesselpost".getBytes(), "vessels post", new Date(), "57381929128,1231231231231")
+        List<PostResponse> postResponses = List.of(
+                new PostResponse(1, "https://aws.amazon.com/s3/noahpost".getBytes(), 1,
+                                 "noahs post", new Date(), "394820485485030,384003985830"),
+                new PostResponse(2, "https://aws.amazon.com/s3/noahsecondpost".getBytes(), 1,
+                                 "noahs second post", new Date(), "394820755485030,384075985830"),
+                new PostResponse(3, "https://aws.amazon.com/s3/lanaspost".getBytes(), 4,
+                                 "lanas post", new Date(), "5345334232,78695875958"),
+                new PostResponse(4, "https://aws.amazon.com/s3/lanassecondpost".getBytes(), 4,
+                                 "lanas second post", new Date(), "574857498394,79287593984"),
+                new PostResponse(5, "https://aws.amazon.com/s3/vesselpost".getBytes(), 3,
+                                 "vessels post", new Date(), "57381929128,1231231231231")
         );
-        Mockito.when(postService.getAllPosts()).thenReturn(postServiceResponse);
+        Mockito.when(postService.getAllPosts()).thenReturn(postResponses);
 
         // Action
         ResultActions response = mockMvc.perform(get("/posts"));
@@ -64,8 +68,8 @@ public class PostControllerTest {
             response.andExpect(status().isOk());
             // Assert: number of objects in API response == number of objects received by postService
             String responseContentAsJson = response.andReturn().getResponse().getContentAsString();
-            List<PostDTO> responseContentAsObjectList = jsonConverter.convertJsonToPostDtoList(responseContentAsJson);
-            Assertions.assertEquals(responseContentAsObjectList.size(), postServiceResponse.size());
+            List<PostResponse> responseContentAsObjectList = jsonConverter.convertJsonToPostDtoList(responseContentAsJson);
+            Assertions.assertEquals(responseContentAsObjectList.size(), postResponses.size());
         } catch (Exception e) {
             logger.error("Test to get all posts failed");
             throw e;
@@ -77,9 +81,11 @@ public class PostControllerTest {
     public void test_postController_getAllPostsByUser_returnsAllPostsByUser() throws Exception {
         // Setup
         Integer userId = 4;
-        List<PostDTO> postServiceResponse = List.of(
-                new PostDTO(3, userId, "https://aws.amazon.com/s3/lanaspost".getBytes(), "lanas post", new Date(), "5345334232,78695875958"),
-                new PostDTO(4, userId, "https://aws.amazon.com/s3/lanassecondpost".getBytes(), "lanas second post", new Date(), "574857498394,79287593984")
+        List<PostResponse> postServiceResponse = List.of(
+                new PostResponse(3, "https://aws.amazon.com/s3/lanaspost".getBytes(), userId,
+                                 "lanas post", new Date(), "5345334232,78695875958"),
+                new PostResponse(4, "https://aws.amazon.com/s3/lanassecondpost".getBytes(), userId,
+                                 "lanas second post", new Date(), "574857498394,79287593984")
         );
         Mockito.when(postService.getAllPostsByUser(userId)).thenReturn(postServiceResponse);
 
@@ -91,10 +97,10 @@ public class PostControllerTest {
             response.andExpect(status().isOk());
             // Assert: number of objects in API response == number of objects received by postService
             String responseContentAsJson = response.andReturn().getResponse().getContentAsString();
-            List<PostDTO> responseContentAsObjectList = jsonConverter.convertJsonToPostDtoList(responseContentAsJson);
+            List<PostResponse> responseContentAsObjectList = jsonConverter.convertJsonToPostDtoList(responseContentAsJson);
             Assertions.assertEquals(postServiceResponse.size(), responseContentAsObjectList.size());
             // Assert: all returned posts are of the requested userId
-            for (PostDTO post : responseContentAsObjectList) {
+            for (PostResponse post : responseContentAsObjectList) {
                 Assertions.assertEquals(userId, post.getUserId());
             }
         } catch (Exception e) {
@@ -108,27 +114,34 @@ public class PostControllerTest {
     public void test_postController_createPost_returnsCreatedPost() throws Exception {
         // Setup
         Integer postId = 26;
+        byte[] postImageBytes = "image.com".getBytes();
         Integer userId = 1;
-        byte[] postImage = "image.com".getBytes();
         String caption = "this is a caption";
         Date timestamp = new Date();
         String locationCoordinates = "location";
-        PostDTO post = new PostDTO(postId, userId, postImage, caption, timestamp, locationCoordinates);
+
+        MockMultipartFile postImage = new MockMultipartFile("postImage", "test.jpg", "image/jpeg", postImageBytes);
+        PostCreationRequest postCreationRequest = new PostCreationRequest(userId, caption, timestamp, locationCoordinates);
+        String postCreationRequestAsJson = jsonConverter.convertPostDtoToJson(postCreationRequest);
+        MockMultipartFile postRequest = new MockMultipartFile("postRequest", "", "application/json", postCreationRequestAsJson.getBytes());
+
+        PostResponse post = new PostResponse(postId, postImageBytes, userId, caption, timestamp, locationCoordinates);
         String postAsJson = jsonConverter.convertPostDtoToJson(post);
-        PostDTO postServiceResponse = new PostDTO(postId, userId, postImage, caption, timestamp, locationCoordinates);
-        Mockito.when(postService.createPost(any(PostDTO.class))).thenReturn(postServiceResponse); // simulate postId being generated
+        PostResponse postServiceResponse = new PostResponse(postId, postImageBytes, userId,
+                                                            caption, timestamp, locationCoordinates);
+
+        Mockito.when(postService.createPost(any(byte[].class), any(PostCreationRequest.class))).thenReturn(postServiceResponse); // simulate postId being generated
 
         // Action
-        ResultActions response = mockMvc.perform(post("/posts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(postAsJson));
+        ResultActions response = mockMvc.perform(multipart("/posts")
+                .file(postImage).file(postRequest));
 
         try {
             // Assert: correct status
             response.andExpect(status().isCreated());
             // Assert: returned post matches the post passed into controller
             String responseContentAsJson = response.andReturn().getResponse().getContentAsString();
-            PostDTO responseContentAsPostObject = jsonConverter.convertJsonToPostDto(responseContentAsJson);
+            PostResponse responseContentAsPostObject = jsonConverter.convertJsonToPostDto(responseContentAsJson);
             Assertions.assertEquals(post.getPostId(), responseContentAsPostObject.getPostId());
             Assertions.assertEquals(post.getUserId(), responseContentAsPostObject.getUserId());
             Assertions.assertArrayEquals(post.getPostImage(), responseContentAsPostObject.getPostImage());

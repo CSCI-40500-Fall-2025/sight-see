@@ -9,8 +9,8 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
     private Integer postId = null;
+
     private Integer userId; // FK
     private String caption;
     private Date timestamp;

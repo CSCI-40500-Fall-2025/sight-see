@@ -1,6 +1,7 @@
 package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.controller;
 
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserResponse;
 import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.service.UserService;
 
 import org.slf4j.Logger;
@@ -26,13 +27,13 @@ public class UserController {
     }
 
     @GetMapping("/id={userId}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("userId") Integer userId) {
-        UserDTO user;
+    public ResponseEntity<UserResponse> getUserById(@PathVariable("userId") Integer userId) {
+        UserResponse user;
         try {
             user = userService.getUserById(userId);
         } catch (Exception e) {
             if (e instanceof NoSuchElementException) {
-                logger.warn("Error retrieving user with ID {}. Cause: UserDTO not found", userId);
+                logger.warn("Error retrieving user with ID {}. Cause: User not found", userId);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             logger.error("Error retrieving user with ID {}. Cause: {}", userId, e.getMessage());
@@ -44,8 +45,8 @@ public class UserController {
     }
 
     @GetMapping("/email={email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable("email") String email) {
-        UserDTO user;
+    public ResponseEntity<UserResponse> getUserByEmail(@PathVariable("email") String email) {
+        UserResponse user;
         try {
             user = userService.getUserByEmail(email);
         } catch (Exception e) {
@@ -61,11 +62,11 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    //TODO: remove; not relevant
+    //relevant?
     @GetMapping("")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         //TODO: Populate production database with a dummy user to prevent error on first launch?
-        List<UserDTO> allUsers;
+        List<UserResponse> allUsers;
         try {
             allUsers = userService.getAllUsers();
         } catch (Exception e) {
@@ -77,10 +78,20 @@ public class UserController {
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    //TODO: implement
+    //is any further security necessary?
     @PostMapping("")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO incomingUser) {
-        return null;
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreationRequest request) {
+        UserResponse createdUser;
+        try {
+            createdUser = userService.createUser(request);
+        } catch (Exception e) {
+            logger.error("Error creating user with username {} and email {}. Cause: {}",
+                         request.getUsername(), request.getEmail(), e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.info("User with ID {} created", createdUser.getUserId());
+
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     //TODO: carry user identification to backend to authorize delete operation
@@ -100,6 +111,8 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //TODO: add try/catch in S3Service? What would S3Client do if failed?
+        //check UserController, UserService, PostController, PostService
     @PostMapping(path = "/{userId}/profile-photo",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadProfilePhoto(@PathVariable("userId") Integer userId,
@@ -114,9 +127,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO: keep or remove?
-	//TODO: add try/catch in S3Service? What would S3Client do if failed?
-        //TODO: check UserController, UserService, PostController, PostService
+    //keep or remove?
     @GetMapping("/{userId}/profile-photo")
     public byte[] getProfilePhoto(@PathVariable("userId") Integer userId) {
         byte[] profilePhoto;

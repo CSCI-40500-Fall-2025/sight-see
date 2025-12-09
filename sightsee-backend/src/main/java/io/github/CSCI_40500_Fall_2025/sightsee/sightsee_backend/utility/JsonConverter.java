@@ -2,8 +2,9 @@ package io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.utility;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostDTO;
-import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserDTO;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostCreationRequest;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.PostResponse;
+import io.github.CSCI_40500_Fall_2025.sightsee.sightsee_backend.model.UserResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,24 +14,29 @@ public class JsonConverter {
 
     public JsonConverter() {}
 
-    public PostDTO convertJsonToPostDto(String jsonString) throws Exception {
+    public PostResponse convertJsonToPostDto(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(jsonString, new TypeReference<>() {
         });
     }
 
-    public List<PostDTO> convertJsonToPostDtoList(String jsonString) throws Exception {
+    public List<PostResponse> convertJsonToPostDtoList(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(jsonString, new TypeReference<>() {
         });
     }
 
-    public String convertPostDtoToJson(PostDTO postDto) throws Exception {
+    public String convertPostDtoToJson(PostResponse postResponse) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(postDto);
+        return objectMapper.writeValueAsString(postResponse);
     }
 
-    public UserDTO convertJsonToUserDto(String jsonString) throws Exception {
+        public String convertPostDtoToJson(PostCreationRequest postCreationRequest) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(postCreationRequest);
+    }
+
+    public UserResponse convertJsonToUserDto(String jsonString) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(jsonString, new TypeReference<>() {
         });
