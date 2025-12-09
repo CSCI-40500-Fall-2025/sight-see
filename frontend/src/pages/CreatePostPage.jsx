@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
    Navbar,
    ImageUpload,
@@ -11,21 +11,6 @@ import {
 export default function CreatePostPage() {
    const [imageFile, setImageFile] = useState(null);
    const [showImageUploadError, setShowImageUploadError] = useState(false);
-   const [locationCoords, setLocationCoords] = useState(null);
-
-   // At page load, get the coordinates of the user
-   useEffect(() => {
-      const getLocationOnLoad = async () => {
-         try {
-            const coords = await getLocation();
-            setLocationCoords(coords);
-         } catch (error) {
-            console.log(error);
-         }
-      };
-
-      getLocationOnLoad();
-   }, []);
 
    // Function to get the current location of user
    const getLocation = async () => {
@@ -35,11 +20,7 @@ export default function CreatePostPage() {
             // Function that gets the user's current location
             navigator.geolocation.getCurrentPosition(
                // Location is good, return coordinates
-               (pos) =>
-                  resolve({
-                     latitude: pos.coords.latitude,
-                     longitude: pos.coords.longitude,
-                  }),
+               (pos) => resolve(pos.coords),
 
                // Error in getting location
                (err) => reject(err)
@@ -59,7 +40,7 @@ export default function CreatePostPage() {
     *    Check for SQl injection
     */
    const validateCaptionInput = (caption) => {
-      const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}\uFE0F]{0,280}$/u;
+      const characterRegex = /^[\p{L}\p{N}\p{P}\p{Zs}\p{Emoji}]{0,280}$/u;
 
       // Case Sensitive: will not match 'select'
       const bannedWordsRegex =
@@ -67,6 +48,8 @@ export default function CreatePostPage() {
 
       // SQL special characters
       /** Looks for:
+       *  '
+       *  "
        *  ;
        *  \
        *  -
@@ -78,14 +61,14 @@ export default function CreatePostPage() {
        *  <
        *  >
        */
-      const bannedCharacters = /[;\\\-*\/()=<>]/;
+      const bannedCharacters = /['";\\\-*\/()=<>]/;
 
       // Check that has only allowed characters and is within allowed length
       const containsAllowedCharacters = characterRegex.test(caption);
 
       if (!containsAllowedCharacters) {
          // Error handle TODO
-         console.log("no good: allowed characters");
+         console.log("no good");
          return false;
       }
 
@@ -94,7 +77,7 @@ export default function CreatePostPage() {
 
       if (containsBannedWords) {
          // Error handle TODO
-         console.log("no good: banned words");
+         console.log("no good");
 
          return false;
       }
@@ -104,7 +87,7 @@ export default function CreatePostPage() {
 
       if (containsBannedCharacters) {
          // Error handle TODO
-         console.log("no good 3: banned characters");
+         console.log("no good");
 
          return false;
       }
@@ -114,31 +97,30 @@ export default function CreatePostPage() {
    };
 
    const handleSubmit = async (caption) => {
-      // If the location is null, don't post
-      if (!locationCoords) {
-         console.log("NO LOCATION");
-         return;
-      }
-
-      // Validate the caption
-      // TODO: If the user chose no caption, do something here
-      // Remove the option if needed
       const isValidCaption = validateCaptionInput(caption);
 
       if (!isValidCaption) {
-         console.log("BAD CAPTION");
+         // Error handling TODO
+         console.log("bad caption");
          return;
       }
 
+      console.log("GOOD");
+
       // Get date and time
-      // MOST likely not neede, delete if not needed
       const time = Date.now();
       console.log(time);
 
-      // Get image? Waiting on how the backend looks to add this TODO
+      // Get image?
 
       // Async logic
       try {
+         // Get location
+         const { latitude, longitude } = await getLocation();
+
+         console.log("Lat: ", latitude);
+         console.log("Long:", longitude);
+
          // Post to backend here
       } catch (error) {
          console.log(error);
@@ -184,14 +166,36 @@ export default function CreatePostPage() {
                </div>
             )}
 
+            {
+               /** Remove this! After testing */
+               imageFile && (
+                  <div>
+                     {imageFile.name} <br></br> {imageFile.type}
+                  </div>
+               )
+            }
+
             {imageFile && (
                <CaptionForm
                   onSubmit={handleSubmit}
                   imageFile={imageFile}
-                  location={locationCoords}
                ></CaptionForm>
             )}
          </fieldset>
       </div>
    );
+}
+
+{
+   /** ML Component Flow:
+    *    If a user uploads a heic image, make them choose again
+    *
+    *    Once image is display, give user three options for captioning:
+    *       No caption wanted
+    *       User enters their own caption
+    *       User can generate a caption
+    *          If user decides to generate a caption:
+    *             Ask them for a mood.
+    *             Ask them to provide some details about what the picture means to them: maybe ask them what memory comes up in this image, or something
+    */
 }
