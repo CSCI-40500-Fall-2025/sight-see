@@ -7,6 +7,7 @@ import {
    Button,
    CaptionForm,
 } from "../components";
+import api from "../axiosConfig";
 
 export default function CreatePostPage() {
    const [imageFile, setImageFile] = useState(null);
@@ -113,7 +114,24 @@ export default function CreatePostPage() {
       return true;
    };
 
+   const handleImageUploadSuccess = (file) => {
+      setShowImageUploadError(false);
+      setImageFile(file);
+   };
+
+   const handleImageUploadError = () => {
+      setShowImageUploadError(true);
+   };
+
    const handleSubmit = async (caption) => {
+      /**
+       * Backend route: post '/posts'
+       * Standard Data Required:
+       *    userId
+       *    caption
+       *    timestamp
+       *    locationCoordinates
+       */
       // If the location is null, don't post
       if (!locationCoords) {
          console.log("NO LOCATION");
@@ -130,28 +148,37 @@ export default function CreatePostPage() {
          return;
       }
 
-      // Get date and time
-      // MOST likely not neede, delete if not needed
-      const time = Date.now();
-      console.log(time);
+      // Create the request data
+      const formData = new FormData();
 
-      // Get image? Waiting on how the backend looks to add this TODO
+      // add image to form data
+      formData.append("postImage", imageFile);
+
+      // Add the content to the form data
+      const postContent = {
+         userId: localStorage.getItem("userId"),
+         caption: caption,
+         timestamp: Date.now(),
+         locationCoordinates: `${locationCoords.latitude},${locationCoords.longitude}`,
+      };
+      formData.append(
+         "postRequest",
+         new Blob([JSON.stringify(postContent)], { type: "application/json" })
+      );
 
       // Async logic
       try {
          // Post to backend here
+         const response = await api.post("/posts", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+         });
+
+         if (response.status === 201) {
+            // TODO: Do something here!
+         }
       } catch (error) {
          console.log(error);
       }
-   };
-
-   const handleImageUploadSuccess = (file) => {
-      setShowImageUploadError(false);
-      setImageFile(file);
-   };
-
-   const handleImageUploadError = () => {
-      setShowImageUploadError(true);
    };
 
    return (
