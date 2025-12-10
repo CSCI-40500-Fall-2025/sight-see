@@ -3,7 +3,7 @@ import { Navbar, PostContent, CommentSection } from "../components";
 import { use, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DummyPostInformation } from "./DummyPostInformation";
-import axios from "axios";
+import api from "../axiosConfig";
 
 export default function PostPage() {
    const { postID } = useParams();
@@ -14,7 +14,7 @@ export default function PostPage() {
 
    const getPostInfo = async () => {
       try {
-         const response = await axios.get(`/posts/${postID}`);
+         const response = await api.get(`/posts/${postID}`);
 
          if (response.status === 200) {
             // Fill in the information
