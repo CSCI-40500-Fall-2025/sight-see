@@ -8,11 +8,13 @@ import {
    CaptionForm,
 } from "../components";
 import api from "../axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePostPage() {
    const [imageFile, setImageFile] = useState(null);
    const [showImageUploadError, setShowImageUploadError] = useState(false);
    const [locationCoords, setLocationCoords] = useState(null);
+   const navigate = useNavigate();
 
    // At page load, get the coordinates of the user
    useEffect(() => {
@@ -174,7 +176,9 @@ export default function CreatePostPage() {
          });
 
          if (response.status === 201) {
-            // TODO: Do something here!
+            console.log(response);
+            // Nav to new post page
+            navigate(`/post/${response.data.postId}`);
          }
       } catch (error) {
          console.log(error);
