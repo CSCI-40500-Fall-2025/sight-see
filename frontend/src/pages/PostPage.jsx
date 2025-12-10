@@ -3,31 +3,59 @@ import { Navbar, PostContent, CommentSection } from "../components";
 import { use, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DummyPostInformation } from "./DummyPostInformation";
+import axios from "axios";
 
 export default function PostPage() {
-   {
-      /** Get and organize sample info */
-   }
    const { postID } = useParams();
-   let postInformation = DummyPostInformation.find(
-      (post) => post.id === postID
-   );
-   const username = postInformation.username;
-   const userID = postInformation.userId;
-   const datePostCreated = postInformation.dateCreated;
-   const timePostCreated = postInformation.timeCreated;
-   const picture = postInformation.picture;
-   const caption = postInformation.caption;
 
-   const [likedPostState, changeLikedPostState] = useState(
-      postInformation.postLikeState
-   );
-   const [likeCount, changeLikeCountState] = useState(postInformation.likes);
-   const [commentsList, changeCommentListState] = useState(
-      postInformation.comments
-   );
+   useEffect(() => {
+      getPostInfo();
+   }, []);
 
-   const location = postInformation.location;
+   const getPostInfo = async () => {
+      try {
+         const response = await axios.get(`/posts/${postID}`);
+
+         if (response.status === 200) {
+            // Fill in the information
+            const postInformation = response.data;
+
+            // Convert byte array to base64 image string
+            const pictureBase64 = byteArrayToBase64(postInformation.postImage);
+
+            // Fill in the state with the fetched post data
+            setUsername(postInformation.username);
+            setUserID(postInformation.userId);
+
+            setPicture(pictureBase64);
+            setCaption(postInformation.caption);
+
+            setLocation(postInformation.locationCoordinates);
+
+            setDatePostCreated("08/20/2025");
+            setTimePostCreated("5 Minutes ago");
+
+            setLoading(false);
+            console.log("done");
+         }
+      } catch (error) {
+         console.log(error);
+      }
+   };
+
+   const [username, setUsername] = useState("");
+   const [userID, setUserID] = useState("");
+   const [datePostCreated, setDatePostCreated] = useState("");
+   const [timePostCreated, setTimePostCreated] = useState("");
+   const [picture, setPicture] = useState("");
+   const [caption, setCaption] = useState("");
+   const [location, setLocation] = useState(null);
+
+   const [loading, setLoading] = useState(true);
+
+   const [likedPostState, changeLikedPostState] = useState(true);
+   const [likeCount, changeLikeCountState] = useState(1);
+   const [commentsList, changeCommentListState] = useState([]);
 
    // TEMPORARY
    const [commentsListIndex, changeCommentsListIndexState] = useState(100);
@@ -70,20 +98,26 @@ export default function PostPage() {
    return (
       <div>
          <Navbar></Navbar>
-         <PostContent
-            img={picture}
-            username={username}
-            date={datePostCreated}
-            time={timePostCreated}
-            caption={caption}
-            likeCount={likeCount}
-            likeButtonFunc={updatePostLikeCount}
-            likeStatus={likedPostState}
-         ></PostContent>
-         <CommentSection
-            addComment={addCommentToList}
-            commentsList={commentsList}
-         ></CommentSection>
+         {loading ? (
+            <span className="loading loading-spinner loading-xl"></span>
+         ) : (
+            <>
+               <PostContent
+                  img={picture}
+                  username={username}
+                  date={datePostCreated}
+                  time={timePostCreated}
+                  caption={caption}
+                  likeCount={likeCount}
+                  likeButtonFunc={updatePostLikeCount}
+                  likeStatus={likedPostState}
+               ></PostContent>
+               <CommentSection
+                  addComment={addCommentToList}
+                  commentsList={commentsList}
+               ></CommentSection>
+            </>
+         )}
       </div>
    );
 }
