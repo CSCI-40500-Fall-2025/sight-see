@@ -68,6 +68,7 @@ export default function SignUpPage() {
 
    /* Sign up button click logic. Empty for now */
    const signUpButtonClicked = async () => {
+      console.log("clicked");
       // If password and confirmPassword don't match return
       if (password !== confirmPassword) {
          console.log("Passwords don't match");
@@ -85,7 +86,7 @@ export default function SignUpPage() {
          if (response.status === 201) {
             console.log("Created!");
             console.log(response.data);
-            onSuccessfulSignUp();
+            onSuccessfulSignUp(response.data.userId);
          }
       } catch (error) {
          console.log(error);
